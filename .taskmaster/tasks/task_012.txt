@@ -1,0 +1,11 @@
+# Task ID: 12
+# Title: Implement Caching and Performance Layer
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Build comprehensive caching system with LRU, TTL, and disk persistence
+# Details:
+Create src/context-engine/cache/kv.ts with LRU caches, TTL support, and disk persistence. Implement multi-level caching for embeddings, reranking results, and computed utilities. Add cache invalidation strategies for file changes and explicit updates. Include memory usage monitoring and automatic cleanup mechanisms. Support configurable cache sizes and eviction policies.
+
+# Test Strategy:
+Test cache hit/miss ratios and performance improvements. Verify TTL and eviction policies. Test persistence across application restarts and memory usage limits.

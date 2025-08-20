@@ -1,0 +1,11 @@
+# Task ID: 17
+# Title: Comprehensive Testing and Quality Assurance
+# Status: pending
+# Dependencies: 16
+# Priority: high
+# Description: Implement complete test suite including unit, integration, and performance tests
+# Details:
+Create comprehensive test suite under tests/context-engine/ covering all modules with Jest. Implement unit tests for individual components, integration tests for end-to-end workflows, and performance tests for latency/throughput requirements. Add test utilities, fixtures, and mocks. Ensure Biome compliance and TypeScript strict mode compatibility. Include CI/CD integration and automated quality gates.
+
+# Test Strategy:
+Achieve >90% code coverage with meaningful tests. Verify all acceptance criteria: 35% token reduction, 40% premium call reduction, <2% accuracy delta, latency targets (none ≤0.8s, small ≤2.5s). Test MCP tool visibility and CLI backward compatibility.

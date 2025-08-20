@@ -1,0 +1,11 @@
+# Task ID: 16
+# Title: Build Monitoring and Metrics System
+# Status: pending
+# Dependencies: 15
+# Priority: medium
+# Description: Implement comprehensive monitoring with RAGAS evaluation and ROI tracking
+# Details:
+Create src/context-engine/metrics/ragas.ts for answer quality evaluation and src/context-engine/metrics/roi.ts for cost/performance tracking. Implement scripts/metrics/roi.js for local dashboard generation. Add structured logging, performance profiling, and usage analytics. Track key metrics: token efficiency, tier usage, latency percentiles, cache hit rates, and quality scores. Support metric collection and reporting without performance impact.
+
+# Test Strategy:
+Test metric collection accuracy and performance overhead. Verify RAGAS evaluation consistency. Test dashboard generation and metric aggregation. Validate ROI calculations and cost tracking.

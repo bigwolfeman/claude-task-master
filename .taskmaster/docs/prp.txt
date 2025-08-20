@@ -1,0 +1,421 @@
+# Claude Task Master - Product Requirements Document
+
+<PRD>
+# Technical Architecture  
+
+## System Components
+1. **Task Management Core**
+   - Tasks.json file structure (single source of truth)
+   - Task model with dependencies, priorities, and metadata
+   - Task state management system
+   - Task file generation subsystem
+
+2. **AI Integration Layer**
+   - Anthropic Claude API integration
+   - Perplexity API integration (optional)
+   - Prompt engineering components
+   - Response parsing and processing
+
+3. **Command Line Interface**
+   - Command parsing and execution
+   - Interactive user input handling
+   - Display and formatting utilities
+   - Status reporting and feedback system
+
+4. **Cursor/Windsurf/VS Code MCP Integration**
+   - MCP tool registration (stdio)
+   - Agent interaction patterns
+   - Workflow guideline specifications
+   - Known editor caveats (avoid `--package=task-master-ai` arg)
+
+5. **Context Engine (Tri-Index / MSE / Usefulness 2.0)**
+   - **Tri-Index Memory**
+     - Graph index (themes & temporal edges) for neighborhood expansion
+     - RAPTOR summary tree for hierarchical retrieval at the right abstraction level
+     - Hybrid evidence pool: BM25 + dense vectors; optional late-interaction (ColBERT-class)
+   - **Ranking & Packing**
+     - Usefulness 2.0: pointwise utility + pairwise micro-trainer + bubble stabilizer
+     - Budgeted max-coverage over **atoms** (ENT/NUM/DATE/REL) with MMR diversification
+   - **Answerability Router**
+     - Proof of answerability (coverage %, conflicts, support style) → route: none | small | premium
+   - **Compression**
+     - Trained extractive compressor (LLMLingua-class), entity/number-safe, ≤160 tokens/snippet
+   - **Surface Area**
+     - MCP tools: `context_ingest`, `context_query`, `context_proof`, `context_explain`
+     - CLI: `task-master ingest`, `task-master build-graph`, `task-master query`, `task-master proof`
+   - **Storage & Caches**
+     - SQLite (default) or Postgres + pgvector; LRU caches with TTL and disk persistence
+
+## Data Models
+
+### Task Model
+```json
+{
+  "id": 1,
+  "title": "Task Title",
+  "description": "Brief task description",
+  "status": "pending|done|deferred",
+  "dependencies": [0],
+  "priority": "high|medium|low",
+  "details": "Detailed implementation instructions",
+  "testStrategy": "Verification approach details",
+  "subtasks": [
+    {
+      "id": 1,
+      "title": "Subtask Title",
+      "description": "Subtask description",
+      "status": "pending|done|deferred",
+      "dependencies": [],
+      "acceptanceCriteria": "Verification criteria"
+    }
+  ]
+}
+```
+
+### Tasks Collection Model
+```json
+{
+  "meta": {
+    "projectName": "Project Name",
+    "version": "1.0.0",
+    "prdSource": "path/to/prd.txt",
+    "createdAt": "ISO-8601 timestamp",
+    "updatedAt": "ISO-8601 timestamp"
+  },
+  "tasks": [
+  ]
+}
+```
+
+### Context Engine Data Types (TS)
+```ts
+type AtomType = 'ENT' | 'NUM' | 'DATE' | 'REL';
+interface Atom { id:string; type:AtomType; surface:string; norm:string; provenance:{chunkId:string; offset:number}; }
+interface Chunk { id:string; docId:string; text:string; tokens:number; embedding?:number[]; start?:number; end?:number; authority?:number; recency?:number; }
+interface Usefulness { rel:number; infoGain:number; trust:number; reusability:number; tokenCost:number; conflictRisk:number; score:number; }
+interface Proof { coverage:number; conflicts:number; supportStyle:'span'|'paraphrase'|'none'; selected:Array<{chunkId:string; span?:[number,number]}>; }
+interface QueryPlan { path:'GraphFirst'|'TreeFirst'|'EvidenceFirst'; multiQuery:string[]; hyde?:string; budget:number; }
+```
+
+### Context Engine Tables (SQL)
+```sql
+CREATE TABLE IF NOT EXISTS documents(
+  id TEXT PRIMARY KEY, uri TEXT, title TEXT,
+  authority REAL DEFAULT 1.0, created_at TEXT
+);
+CREATE TABLE IF NOT EXISTS chunks(
+  id TEXT PRIMARY KEY, doc_id TEXT REFERENCES documents(id),
+  text TEXT, tokens INT, start INT, end INT
+);
+CREATE TABLE IF NOT EXISTS atoms(
+  id TEXT PRIMARY KEY, type TEXT, surface TEXT, norm TEXT, provenance TEXT
+);
+CREATE TABLE IF NOT EXISTS coverage(
+  chunk_id TEXT, atom_id TEXT, PRIMARY KEY(chunk_id, atom_id)
+);
+CREATE TABLE IF NOT EXISTS pairwise(
+  query_id TEXT, winner_id TEXT, loser_id TEXT, signal TEXT, weight REAL, ts TEXT
+);
+CREATE TABLE IF NOT EXISTS answers(
+  query_id TEXT PRIMARY KEY, coverage REAL, conflicts INT, support_style TEXT, decided_by TEXT, tokens_saved INT, tier_used TEXT
+);
+CREATE TABLE IF NOT EXISTS graph_nodes(
+  id TEXT PRIMARY KEY, type TEXT, label TEXT, metadata TEXT
+);
+CREATE TABLE IF NOT EXISTS graph_edges(
+  source_id TEXT, target_id TEXT, edge_type TEXT, weight REAL,
+  PRIMARY KEY(source_id, target_id, edge_type)
+);
+CREATE TABLE IF NOT EXISTS summaries(
+  id TEXT PRIMARY KEY, level INT, parent_id TEXT,
+  summary TEXT, child_chunks TEXT, tokens INT
+);
+```
+
+## APIs and Integrations
+1. **Anthropic Claude API**
+   - Authentication via API key
+   - Prompt construction and streaming
+   - Response parsing and extraction
+   - Error handling and retries
+
+2. **Perplexity API (optional)**
+   - Authentication via API key
+   - Research-oriented prompt construction
+   - Enhanced contextual response handling
+   - Fallback mechanisms to Claude
+
+3. **Context Engine Surfaces**
+   - **MCP tools**:
+     - `context_ingest({paths[]}) → {count, errors[]}`
+     - `context_query({question, budget_tokens, include_proof}) → {brief, citations[], planned_tier, proof?}`
+     - `context_proof({question}) → {coverage, conflicts, supportStyle, selected[]}`
+     - `context_explain({question}) → {plan, scores, packing}`
+   - **CLI commands**:
+     - `task-master ingest <path|url> [...]`
+     - `task-master build-graph [--rebuild]`
+     - `task-master query "<question>" --budget=<tokens> [--format=json|pretty]`
+     - `task-master proof "<question>"`
+
+4. **File System API**
+   - Read/write tasks.json & task files
+   - Read/write context DB at `~/.taskmaster/kb/context.db`
+   - fs-watch `.taskmaster/**` to invalidate caches
+
+## Infrastructure Requirements
+1. **Node.js Runtime**
+   - Version **18+** recommended
+   - ESM/CJS interop compatible with repo
+   - File system access rights
+   - CLI/MCP stdio execution
+
+2. **Configuration Management**
+   - Environment variables for context engine
+   - `.env` / `.taskmasterconfig` (optional) overrides
+   - Feature flags: `CONTEXT_ENGINE_ENABLED`, `CONTEXT_GRAPH_ENABLED`
+
+3. **Development Environment**
+   - Git repository
+   - NPM package management
+   - Cursor/Windsurf/VS Code with MCP
+   - Command-line terminal access
+
+# Development Roadmap  
+
+## Phase 1: Foundation — Ingest, Storage, Caching
+1. **Chunker Module**
+   - **Description**: Markdown/code-aware chunking; token counts; parent pointers; overlap rules.
+   - **Dependencies**: None
+   - **Priority**: high
+   - **Details**: Respect code blocks; keep identifiers intact; record `start/end` offsets.
+   - **Test Strategy**: Snapshot chunks on sample MD/code; verify token bounds and parent mapping.
+
+2. **Atom Extraction**
+   - **Description**: Extract ENT/NUM/DATE/REL atoms + coverage edges from chunks.
+   - **Dependencies**: Chunker
+   - **Priority**: high
+   - **Details**: Regex + NER-lite; capture spans; normalize numbers/units/dates.
+   - **Test Strategy**: Golden tests on fixtures; assert atom counts & normalized forms.
+
+3. **Storage Backend**
+   - **Description**: SQLite tables for documents/chunks/atoms/coverage/pairwise/answers/graph/summaries.
+   - **Dependencies**: Chunker, Atoms
+   - **Priority**: high
+   - **Details**: better-sqlite3; migrations; WAL mode; optional pgvector.
+   - **Test Strategy**: Migration tests; CRUD tests; perf sanity on 10k chunks.
+
+4. **KV Cache**
+   - **Description**: LRU with TTL + disk persistence for embeddings, retrieval results, and plans.
+   - **Dependencies**: Storage
+   - **Priority**: medium
+   - **Details**: Namespaced caches; size caps; eviction hooks.
+   - **Test Strategy**: Expiry/eviction tests; persistence reload tests.
+
+## Phase 2: Knowledge Building — RAPTOR & Graph
+5. **RAPTOR Summary Tree**
+   - **Description**: Bottom-up summaries; multi-level nodes; token budgets per level.
+   - **Dependencies**: Storage
+   - **Priority**: high
+   - **Details**: Level policy; child_chunks JSON; summary tokens recorded.
+   - **Test Strategy**: Depth/coverage checks; budget adherence; quality spot-checks.
+
+6. **Theme/Temporal Graph**
+   - **Description**: Build graph communities; edges by co-reference, links, and time proximity.
+   - **Dependencies**: Atoms, Storage
+   - **Priority**: high
+   - **Details**: Weighted edges; simple decay; community detection optional.
+   - **Test Strategy**: Graph size/degree invariants; neighborhood expansion time < 100ms on sample.
+
+7. **CLI Ingest & Build-Graph**
+   - **Description**: `scripts/ingest.js` and `scripts/build-graph.js` orchestration.
+   - **Dependencies**: 1–6
+   - **Priority**: high
+   - **Details**: Progress indicators; incremental updates; dry-run.
+   - **Test Strategy**: CLI smoke; exit codes; idempotency checks.
+
+## Phase 3: Retrieval — Hybrid + Rerank + Late-Interaction (opt)
+8. **Hybrid Retriever**
+   - **Description**: BM25 + dense; Reciprocal Rank Fusion (RRF); Multi-Query; optional HyDE.
+   - **Dependencies**: Storage, KV Cache
+   - **Priority**: high
+   - **Details**: Top-K 30; dedupe by chunkId; expose diagnostics.
+   - **Test Strategy**: Relevance tests on fixtures; latency P50 < 200ms on local DB.
+
+9. **Cross-Encoder Rerank**
+   - **Description**: CE rerank top-50 to top-12; local-first with API fallback.
+   - **Dependencies**: Hybrid Retriever
+   - **Priority**: high
+   - **Details**: Batch scoring; timeout 400ms; deterministic fallback.
+   - **Test Strategy**: Ranking lift vs. baseline; timeout behavior.
+
+10. **Late-Interaction Sidecar (optional)**
+    - **Description**: ColBERT-class sidecar for high-recall tenants.
+    - **Dependencies**: Hybrid Retriever
+    - **Priority**: low (feature-flagged)
+    - **Details**: HTTP `/search`; 400ms timeout; disabled by default.
+    - **Test Strategy**: Opt-in perf tests; compare recall on messy corpora.
+
+## Phase 4: Ranking — Usefulness 2.0 + Pairwise + Bubble
+11. **Usefulness Scoring**
+    - **Description**: Compute `U = αRel + βInfoGain + γTrust + δReusability − ηTokenCost − ζConflictRisk`.
+    - **Dependencies**: Retrieval
+    - **Priority**: high
+    - **Details**: Feature engineering for trust (authority/recency), info gain (novel atoms).
+    - **Test Strategy**: Unit tests per component; monotonicity checks.
+
+12. **Pairwise Micro-Trainer**
+    - **Description**: Online RankNet/BT using implicit wins/losses (selected vs dropped, clicks, attributions).
+    - **Dependencies**: Usefulness
+    - **Priority**: medium
+    - **Details**: Capped LR; shadow mode; persistence to `pairwise` table.
+    - **Test Strategy**: Convergence on synthetic data; A/B on ranking quality.
+
+13. **Bubble Stabilizer**
+    - **Description**: 1–2 local passes to fix inversions; early cutoff when swaps fall below threshold.
+    - **Dependencies**: Pairwise
+    - **Priority**: medium
+    - **Details**: O(k^2) guarded; only over top-20.
+    - **Test Strategy**: Runtime bounds; deterministic reordering given seed.
+
+## Phase 5: Packing & Compression — Max-Coverage + MMR
+14. **Atom Coverage Matrix**
+    - **Description**: Sparse coverage of chunks→atoms; compute coverage ratio for selection set.
+    - **Dependencies**: Atoms
+    - **Priority**: high
+    - **Details**: CSR-like structure; fast union/coverage ops.
+    - **Test Strategy**: Correctness vs. brute force; big-O verification.
+
+15. **Budgeted Max-Coverage Packer**
+    - **Description**: Select chunks maximizing atom coverage under token budget with MMR.
+    - **Dependencies**: Coverage Matrix, Usefulness
+    - **Priority**: high
+    - **Details**: Greedy + tie-break by U/tokens; λ≈0.3 MMR.
+    - **Test Strategy**: Golden tests; token cap enforcement; diversity effect.
+
+16. **Extractive Compressor**
+    - **Description**: LLMLingua-class compressor; lock entities/numbers/IDs; ≤160 tokens/snippet.
+    - **Dependencies**: Packer
+    - **Priority**: medium
+    - **Details**: Optional sidecar HTTP; fail-safe to uncompressed.
+    - **Test Strategy**: Atom-preservation check pre/post; quality spot checks.
+
+## Phase 6: Router — Answerability Proof & Tiers
+17. **Answerability Proof**
+    - **Description**: Compute coverage %, conflicts (exact/semantic), support style (span/paraphrase/none).
+    - **Dependencies**: Packer
+    - **Priority**: high
+    - **Details**: Span detection; contradiction heuristics; thresholds configurable.
+    - **Test Strategy**: Simulated scenarios; precision/recall of conflict detection.
+
+18. **Tier Router**
+    - **Description**: Route to `none|small|premium` based on proof+budget.
+    - **Dependencies**: Proof
+    - **Priority**: high
+    - **Details**: Defaults—none if coverage≥0.8 && conflicts=0; small otherwise; premium on low-support/multi-hop/legal.
+    - **Test Strategy**: Policy table tests; tokens-saved KPI checks.
+
+## Phase 7: Integration — Orchestrator, MCP, CLI
+19. **Orchestrator**
+    - **Description**: End-to-end pipeline returning `{brief, context[], citations[], proof, planned_tier}`.
+    - **Dependencies**: 1–18
+    - **Priority**: high
+    - **Details**: Deterministic answer path (no LLM) on tier=none; compression path for LLM tiers.
+    - **Test Strategy**: E2E fixtures; latency targets (P50 ≤0.8s none; ≤2.5s small).
+
+20. **MCP Tools**
+    - **Description**: Register `context_ingest/query/proof/explain` in `mcp-server/src/tools`; stdio JSON schema.
+    - **Dependencies**: Orchestrator
+    - **Priority**: high
+    - **Details**: Avoid `--package` flag; robust error messages.
+    - **Test Strategy**: Editor discovery smoke; round-trip JSON validation.
+
+21. **CLI Commands**
+    - **Description**: Add `ingest|build-graph|query|proof` to `index.js` & `scripts/`.
+    - **Dependencies**: Orchestrator
+    - **Priority**: high
+    - **Details**: Preserve existing help/flag style; pretty/json output.
+    - **Test Strategy**: CLI smoke; exit-code semantics; sample outputs.
+
+## Phase 8: Quality & Metrics — RAGAS, ROI, Router Savings
+22. **Metrics & Dashboards**
+    - **Description**: RAGAS (faithfulness/relevancy/recall), Context ROI, Router Savings; local script `metrics/roi.js`.
+    - **Dependencies**: Orchestrator, Router
+    - **Priority**: medium
+    - **Details**: CSV/JSON emit; simple terminal dashboard.
+    - **Test Strategy**: Metric correctness on canned runs; trend lines.
+
+# Logical Dependency Chain
+
+- **Foundation Layer**: Chunker → Atoms → Storage → KV Cache  
+- **Knowledge Layer**: RAPTOR → Graph → CLI ingest/build-graph  
+- **Retrieval Layer**: Hybrid → Rerank → (Late-Interaction opt)  
+- **Ranking Layer**: Usefulness → Pairwise → Bubble  
+- **Packing Layer**: Coverage → Max-Coverage → Compression  
+- **Routing Layer**: Proof → Router  
+- **Integration Layer**: Orchestrator → MCP Tools → CLI  
+- **Quality Layer**: Metrics (RAGAS/ROI/Savings)
+
+# Risks and Mitigations  
+
+## Technical Challenges
+- **ESM/CJS Interop**: Compile TS to match runtime; fall back to dual build.  
+- **Vector Perf**: Tune SQLite-vss; cache embeddings; BM25-only fallback.  
+- **Sidecar Availability**: Feature flags; health checks; timeouts; graceful disable.  
+- **Rate Limits**: Router + caching; deterministic path when proof sufficient.  
+- **Memory Growth**: Bounded LRU; streaming; explicit disposal.
+
+## MVP Definition
+- **MVP**: Phases 1–3 + Orchestrator + CLI `query`; MCP `context_query`.  
+- Post-MVP: Pairwise learner, compressor, graph expansion, metrics dashboards.
+
+## Resource Constraints
+- **Cost Controls**: Token budgets; router thresholds; local-first; caching; audit report of tokens saved.
+- **Docs/Test Debt**: Generate tests with templates; CLI `--debug` traces; keep docs minimal but accurate.
+
+# Appendix  
+
+## AI Prompt Engineering Specifications
+
+### PRD Parsing Prompt (unchanged shape; richer content)
+```
+You transform the PRD into a tasks.json plan.
+
+For each task ensure:
+- title, description, priority, dependencies
+- details: include data models, APIs, file paths, env vars
+- testStrategy: unit + integration acceptance criteria
+
+PRD:
+{prd_content}
+```
+
+### Task Expansion Prompt (include coverage/atoms awareness)
+```
+Main task:
+Title: {task_title}
+Description: {task_description}
+Details: {task_details}
+
+Create {n} subtasks. Consider:
+- atom coverage, budgeted max-coverage, usefulness scoring
+- router thresholds (coverage/conflicts), deterministic answer path
+- MCP & CLI integration points
+
+For each subtask: title, description, dependencies, acceptance criteria.
+```
+
+## Task File System Specification
+- **PRD path**: `.taskmaster/docs/prd.txt`
+- **KB path**: `~/.taskmaster/kb/context.db`
+- **Cache path**: `~/.taskmaster/cache/context/`
+
+## Command-Line Interface Specification
+- Global: `--help`, `--version`, `--debug`, `--json`
+- Common flags: `--id`, `--file`, `--budget`, `--format`
+- Commands: `ingest`, `build-graph`, `query`, `proof`
+
+## API Integration Specifications
+- **Env**: `CONTEXT_ENGINE_ENABLED`, `CONTEXT_VECTOR_BACKEND`, `CONTEXT_DB_PATH`, `CONTEXT_GRAPH_ENABLED`, optional sidecars.
+- **Models**: Use existing model triad (main/research/fallback); Claude Code path.
+
+</PRD>

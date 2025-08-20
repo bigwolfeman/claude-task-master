@@ -1,0 +1,11 @@
+# Task ID: 14
+# Title: Create CLI Commands and Integration
+# Status: pending
+# Dependencies: 13
+# Priority: high
+# Description: Implement CLI commands for ingest, build-graph, query, and proof operations
+# Details:
+Add CLI commands in index.js: 'ingest', 'build-graph', 'query', 'proof' following existing command patterns. Create scripts/ingest.js and scripts/build-graph.js with progress UI and incremental updates. Implement proper argument parsing, validation, and error handling. Support various output formats (JSON, pretty-print) and configuration options. Ensure backward compatibility with existing CLI structure.
+
+# Test Strategy:
+Test all CLI commands with various argument combinations. Verify progress reporting and incremental processing. Test integration with existing CLI structure and configuration.

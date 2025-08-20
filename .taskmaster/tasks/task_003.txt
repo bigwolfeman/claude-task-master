@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Build Text Chunking and Atom Extraction
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Implement intelligent text chunking with Markdown/code awareness and atomic fact extraction
+# Details:
+Create src/context-engine/ingest/chunker.ts for MD/code-aware text segmentation with proper token counting and parent linking. Implement src/context-engine/ingest/atoms.ts for ENT/NUM/DATE/REL extraction using NLP techniques. Build coverage matrix linking atoms to chunks. Support incremental updates and maintain provenance tracking. Preserve code structure and markdown formatting boundaries.
+
+# Test Strategy:
+Unit tests for chunking various file types (MD, JS, TS, JSON). Test atom extraction accuracy on sample documents. Verify coverage matrix correctness and provenance tracking.

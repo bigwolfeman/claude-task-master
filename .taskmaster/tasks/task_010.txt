@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Implement Answerability Proof Router
+# Status: pending
+# Dependencies: 9
+# Priority: high
+# Description: Build the intelligent router that determines appropriate LLM tier based on evidence quality
+# Details:
+Create src/context-engine/router/proof.ts for computing coverage percentage, conflict detection, and support style determination (span/paraphrase/none). Implement src/context-engine/router/route.ts with tier selection logic: none (deterministic) → small (with self-critique) → premium (complex reasoning). Include configurable thresholds per scenario and proof validation mechanisms.
+
+# Test Strategy:
+Test proof calculation accuracy on various evidence sets. Verify tier selection logic with different coverage/conflict scenarios. Test deterministic answer generation for high-confidence cases.

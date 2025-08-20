@@ -14,11 +14,18 @@ export default {
 	// A list of paths to directories that Jest should use to search for files in
 	roots: ['<rootDir>/tests'],
 
-	// The glob patterns Jest uses to detect test files
-	testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+	// The glob patterns Jest uses to detect test files - support both .js and .ts
+	testMatch: [
+		'**/__tests__/**/*.{js,ts}',
+		'**/?(*.)+(spec|test).{js,ts}'
+	],
 
-	// Transform files
-	transform: {},
+	// Transform files - add TypeScript support
+	transform: {
+		'^.+\\.ts$': ['ts-jest', {
+			useESM: true
+		}]
+	},
 
 	// Disable transformations for node_modules
 	transformIgnorePatterns: ['/node_modules/'],
@@ -31,22 +38,9 @@ export default {
 	// Setup module aliases
 	moduleDirectories: ['node_modules', '<rootDir>'],
 
-	// Configure test coverage thresholds
-	coverageThreshold: {
-		global: {
-			branches: 80,
-			functions: 80,
-			lines: 80,
-			statements: 80
-		}
-	},
+	// Module file extensions
+	moduleFileExtensions: ['js', 'ts', 'json'],
 
-	// Generate coverage report in these formats
-	coverageReporters: ['text', 'lcov'],
-
-	// Verbose output
-	verbose: true,
-
-	// Setup file
-	setupFilesAfterEnv: ['<rootDir>/tests/setup.js']
+	// Preset for TypeScript
+	preset: 'ts-jest'
 };

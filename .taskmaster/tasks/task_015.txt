@@ -1,0 +1,11 @@
+# Task ID: 15
+# Title: Implement MCP Tools and Server Integration
+# Status: pending
+# Dependencies: 13
+# Priority: high
+# Description: Create MCP tools for context operations and integrate with existing MCP server architecture
+# Details:
+Create MCP tools in mcp-server/src/tools/: context_ingest.js, context_query.js, context_proof.js, context_explain.js following existing tool patterns. Implement proper input validation, error handling, and response formatting. Address the '0 tools' visibility issue by following README guidance on package arguments. Ensure tools integrate seamlessly with editor extensions and provide consistent user experience.
+
+# Test Strategy:
+Test MCP tool registration and visibility in supported editors. Verify input validation and error handling. Test integration with Cursor/Windsurf/VS Code MCP clients. End-to-end testing of complete context workflow through MCP interface.

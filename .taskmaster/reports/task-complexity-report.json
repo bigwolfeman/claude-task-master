@@ -1,21 +1,149 @@
 {
 	"meta": {
-		"generatedAt": "2025-08-02T14:28:59.851Z",
-		"tasksAnalyzed": 1,
-		"totalTasks": 93,
-		"analysisCount": 1,
+		"generatedAt": "2025-08-20T05:22:46.282Z",
+		"tasksAnalyzed": 17,
+		"totalTasks": 17,
+		"analysisCount": 17,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
 		"usedResearch": false
 	},
 	"complexityAnalysis": [
 		{
-			"taskId": 24,
-			"taskTitle": "Implement AI-Powered Test Generation Command",
+			"taskId": 1,
+			"taskTitle": "Setup Context Engine Foundation Structure",
+			"complexityScore": 4,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the foundation setup into: 1) Create directory structure and base files, 2) Define core TypeScript interfaces (AtomType, Atom, Chunk, etc.), 3) Implement ESM/CJS interop patterns, 4) Configure TypeScript and Biome compliance, 5) Create basic module exports and imports",
+			"reasoning": "Foundational setup with well-defined interfaces. Moderate complexity due to TypeScript configuration and module interop requirements."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement SQLite Storage Backend",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down storage implementation into: 1) Design database schema for all tables, 2) Implement SQLite connection and configuration, 3) Create CRUD operations for documents/chunks/atoms, 4) Build migration system, 5) Add indexing and performance optimizations, 6) Implement prepared statements and security measures",
+			"reasoning": "Complex database design with multiple interconnected tables, migration system, and performance considerations. High complexity due to data modeling and persistence requirements."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Build Text Chunking and Atom Extraction",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down chunking and extraction into: 1) Implement markdown-aware text chunking, 2) Build code-aware segmentation, 3) Add token counting and parent linking, 4) Create NLP-based atom extraction (ENT/NUM/DATE/REL), 5) Build coverage matrix linking atoms to chunks, 6) Implement incremental updates, 7) Add provenance tracking system",
+			"reasoning": "High complexity due to NLP processing, multiple content types, and sophisticated linking between chunks and atoms. Requires domain expertise in text processing."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement RAPTOR Hierarchical Summaries",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down RAPTOR implementation into: 1) Research and implement clustering algorithms, 2) Build bottom-up hierarchical summarization, 3) Integrate LLM calls with model triad pattern, 4) Create summary tree data structures, 5) Implement recursive summarization logic, 6) Add tree traversal and retrieval methods",
+			"reasoning": "Very high complexity requiring advanced algorithms, LLM integration, and sophisticated tree structures. Complex mathematical and AI concepts."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Build Knowledge Graph Construction",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down graph construction into: 1) Implement entity extraction from text, 2) Build relationship detection and classification, 3) Add temporal marker extraction and processing, 4) Create graph algorithms for community detection, 5) Implement neighborhood expansion algorithms, 6) Optimize graph storage and traversal performance",
+			"reasoning": "Very high complexity involving advanced graph algorithms, entity recognition, and relationship modeling. Requires expertise in graph theory and NLP."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Hybrid Retrieval System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down hybrid retrieval into: 1) Implement BM25 scoring algorithm, 2) Build dense embedding retrieval system, 3) Create RRF fusion mechanism (B=60), 4) Add multi-query generation, 5) Implement HyDE (Hypothetical Document Embeddings), 6) Build embedding caching system, 7) Create configurable retrieval strategies",
+			"reasoning": "High complexity combining multiple retrieval methods, sophisticated fusion algorithms, and caching mechanisms. Requires deep understanding of information retrieval."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Build Cross-Encoder Reranking",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down reranking into: 1) Integrate local cross-encoder models, 2) Implement API fallback mechanisms, 3) Build efficient batch processing, 4) Add caching for query-document pairs, 5) Create health checks and timeout handling",
+			"reasoning": "Moderate-high complexity involving ML model integration and robust fallback systems. Well-defined scope but requires careful error handling."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement Usefulness 2.0 Ranking System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down ranking system into: 1) Implement pointwise utility calculation with 6 factors, 2) Build RankNet/Bradley-Terry pairwise learning, 3) Create online learning from implicit judgments, 4) Implement bubble stabilization algorithm, 5) Add configurable weights and learning rates, 6) Build evaluation and validation mechanisms",
+			"reasoning": "Very high complexity involving advanced machine learning, mathematical optimization, and sophisticated ranking algorithms. Requires ML expertise."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Build Max-Coverage Packing Algorithm",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down packing algorithm into: 1) Implement sparse atom coverage matrix operations, 2) Build budgeted max-coverage algorithm, 3) Add MMR (Maximal Marginal Relevance) with λ≈0.3, 4) Create knapsack fallback mechanism, 5) Implement dynamic budget allocation and token counting",
+			"reasoning": "High complexity involving optimization algorithms, sparse data structures, and budget constraints. Requires algorithmic expertise and performance optimization."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Implement Answerability Proof Router",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down proof router into: 1) Implement coverage percentage calculation, 2) Build conflict detection mechanisms, 3) Create support style determination logic, 4) Implement tier selection algorithm (none/small/premium), 5) Add proof validation and threshold configuration",
+			"reasoning": "Moderate-high complexity with sophisticated decision logic and multi-tier routing. Well-defined but requires careful threshold tuning."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Build Extractive Compression System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down compression system into: 1) Implement LLMLingua-style extractive compression, 2) Add entity/number preservation logic, 3) Integrate sidecar HTTP service with health checks, 4) Create compression ratio optimization and fallback mechanisms",
+			"reasoning": "Moderate-high complexity involving text compression algorithms and external service integration. Well-scoped with clear requirements."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Implement Caching and Performance Layer",
+			"complexityScore": 5,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down caching system into: 1) Implement LRU cache with TTL support, 2) Add disk persistence layer, 3) Create multi-level caching for different data types, 4) Build cache invalidation strategies, 5) Add memory monitoring and cleanup mechanisms",
+			"reasoning": "Moderate complexity involving standard caching patterns and performance optimization. Well-understood domain with clear implementation path."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Build Context Engine Orchestrator",
 			"complexityScore": 8,
 			"recommendedSubtasks": 6,
-			"expansionPrompt": "Expand task 24 'Implement AI-Powered Test Generation Command' into 6 subtasks, focusing on: 1) Command structure implementation, 2) AI prompt engineering for test generation, 3) Test file generation and output, 4) Framework-specific template implementation, 5) MCP tool integration, and 6) Documentation and help system integration. Include detailed implementation steps, dependencies, and testing approaches for each subtask.",
-			"reasoning": "This task has high complexity due to several challenging aspects: 1) AI integration requiring sophisticated prompt engineering, 2) Test generation across multiple frameworks, 3) File system operations with proper error handling, 4) MCP tool integration, 5) Complex configuration requirements, and 6) Framework-specific template generation. The task already has 5 subtasks but could benefit from reorganization based on the updated implementation details in the info blocks, particularly around framework support and configuration."
+			"expansionPrompt": "Break down orchestrator into: 1) Create main ContextOrchestrator class structure, 2) Implement answerWithMSE() pipeline method, 3) Add query planning and execution logic, 4) Build error handling and fallback mechanisms, 5) Implement deterministic answer synthesis, 6) Add comprehensive logging and metrics collection",
+			"reasoning": "High complexity as the main integration point coordinating all components. Critical path with complex error handling and state management."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Create CLI Commands and Integration",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break down CLI integration into: 1) Add CLI commands to index.js following existing patterns, 2) Create ingest and build-graph scripts with progress UI, 3) Implement argument parsing and validation, 4) Ensure backward compatibility and output formatting",
+			"reasoning": "Moderate complexity involving CLI framework integration and user interface considerations. Well-defined scope with existing patterns to follow."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Implement MCP Tools and Server Integration",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down MCP integration into: 1) Create context_ingest.js MCP tool, 2) Implement context_query.js and context_proof.js tools, 3) Add context_explain.js tool with proper validation, 4) Fix '0 tools' visibility issue, 5) Test editor integration and user experience",
+			"reasoning": "Moderate-high complexity involving protocol integration and editor extension compatibility. Specific technical challenges around tool visibility."
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Build Monitoring and Metrics System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down metrics system into: 1) Implement RAGAS evaluation framework, 2) Create ROI tracking and cost analysis, 3) Build local dashboard generation, 4) Add structured logging and performance profiling, 5) Create metric aggregation and reporting without performance impact",
+			"reasoning": "Moderate-high complexity involving evaluation frameworks and performance monitoring. Well-defined metrics but requires careful implementation to avoid overhead."
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Comprehensive Testing and Quality Assurance",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down testing into: 1) Create unit test framework and utilities, 2) Implement integration tests for end-to-end workflows, 3) Build performance and latency tests, 4) Add test fixtures and mocks for all components, 5) Ensure Biome compliance and TypeScript strict mode, 6) Set up CI/CD integration and quality gates",
+			"reasoning": "Moderate-high complexity requiring comprehensive test coverage across all components. Critical for system reliability but well-understood testing practices."
 		}
 	]
 }

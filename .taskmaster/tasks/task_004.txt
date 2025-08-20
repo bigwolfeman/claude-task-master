@@ -1,0 +1,49 @@
+# Task ID: 4
+# Title: Implement RAPTOR Hierarchical Summaries
+# Status: pending
+# Dependencies: 3
+# Priority: medium
+# Description: Build the RAPTOR summary tree for hierarchical document representation and retrieval
+# Details:
+Create src/context-engine/ingest/raptor.ts implementing bottom-up hierarchical summarization. Build summary trees with multiple abstraction levels. Support clustering algorithms for grouping related chunks. Implement recursive summarization with LLM integration following model triad pattern (main/research/fallback). Store summaries with parent-child relationships in database.
+
+# Test Strategy:
+Test hierarchical clustering and summarization quality. Verify tree structure integrity and traversal algorithms. Test retrieval at different abstraction levels.
+
+# Subtasks:
+## 1. Research and implement clustering algorithms [pending]
+### Dependencies: None
+### Description: Research and implement clustering algorithms for grouping related chunks in the RAPTOR hierarchical structure
+### Details:
+Implement clustering algorithms (e.g., K-means, hierarchical clustering) to group semantically similar chunks. Create clustering utilities that can handle embeddings and determine optimal cluster sizes. Support configurable clustering parameters and distance metrics.
+
+## 2. Create summary tree data structures [pending]
+### Dependencies: None
+### Description: Design and implement the core data structures for storing and managing the RAPTOR summary tree
+### Details:
+Create TypeScript interfaces and classes for tree nodes, parent-child relationships, and tree metadata. Implement tree node storage with proper indexing in the database. Design efficient tree traversal and navigation methods.
+
+## 3. Integrate LLM calls with model triad pattern [pending]
+### Dependencies: None
+### Description: Implement LLM integration following the model triad pattern for hierarchical summarization
+### Details:
+Create LLM service integration with main/research/fallback model pattern. Implement prompt engineering for hierarchical summarization tasks. Add error handling and fallback mechanisms for LLM failures.
+
+## 4. Build bottom-up hierarchical summarization [pending]
+### Dependencies: 4.1, 4.2, 4.3
+### Description: Implement the core bottom-up summarization algorithm that builds the RAPTOR tree
+### Details:
+Create the main summarization pipeline that processes clusters from bottom to top. Implement level-by-level summarization with proper abstraction. Integrate clustering and LLM components to build the hierarchical structure.
+
+## 5. Implement recursive summarization logic [pending]
+### Dependencies: 4.1, 4.3, 4.4
+### Description: Build the recursive logic for multi-level summarization and tree construction
+### Details:
+Implement recursive algorithms for processing multiple abstraction levels. Create logic for determining when to stop recursion and tree depth management. Handle edge cases and ensure tree balance.
+
+## 6. Add tree traversal and retrieval methods [pending]
+### Dependencies: 4.2, 4.4, 4.5
+### Description: Implement efficient tree traversal algorithms and retrieval methods for the RAPTOR system
+### Details:
+Create tree traversal algorithms for different retrieval strategies. Implement search and retrieval methods that can query at different abstraction levels. Add performance optimizations for large trees and caching mechanisms.
+

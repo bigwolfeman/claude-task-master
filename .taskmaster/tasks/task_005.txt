@@ -1,0 +1,49 @@
+# Task ID: 5
+# Title: Build Knowledge Graph Construction
+# Status: pending
+# Dependencies: 3
+# Priority: medium
+# Description: Implement graph-based knowledge representation with theme and temporal relationships
+# Details:
+Create src/context-engine/ingest/graph.ts for building theme and temporal graphs. Extract entities, relationships, and temporal markers from chunks. Implement graph algorithms for community detection and relationship weighting. Support neighborhood expansion for broad/ambiguous queries. Store graph structure in database with proper indexing for traversal performance.
+
+# Test Strategy:
+Test entity extraction and relationship building accuracy. Verify graph traversal algorithms and community detection. Test neighborhood expansion with various query types.
+
+# Subtasks:
+## 1. Implement Entity Extraction from Text [pending]
+### Dependencies: None
+### Description: Build NLP pipeline to extract entities (people, places, concepts) from text chunks with confidence scoring
+### Details:
+Create entity extraction functionality in src/context-engine/ingest/graph.ts. Implement NLP-based entity recognition to identify people, places, organizations, and concepts from processed chunks. Include confidence scoring for extracted entities and handle entity disambiguation. Support both rule-based and ML-based extraction approaches.
+
+## 2. Build Relationship Detection and Classification [pending]
+### Dependencies: 5.1
+### Description: Implement algorithms to detect and classify relationships between extracted entities
+### Details:
+Develop relationship extraction algorithms to identify connections between entities. Implement relationship classification (semantic, causal, temporal, hierarchical). Create relationship scoring and weighting mechanisms. Support both explicit relationships (mentioned in text) and implicit relationships (co-occurrence based).
+
+## 3. Add Temporal Marker Extraction and Processing [pending]
+### Dependencies: 5.1
+### Description: Extract and process temporal information to build time-aware graph structures
+### Details:
+Implement temporal marker extraction from text (dates, times, temporal expressions). Create temporal relationship mapping between entities and events. Build time-aware graph structures with temporal edges. Support temporal queries and time-based graph traversal.
+
+## 4. Create Graph Algorithms for Community Detection [pending]
+### Dependencies: 5.2, 5.3
+### Description: Implement clustering algorithms to detect thematic communities within the knowledge graph
+### Details:
+Develop community detection algorithms (Louvain, modularity-based) to identify thematic clusters in the graph. Implement graph partitioning for large-scale graphs. Create community scoring and validation mechanisms. Support hierarchical community structure for multi-level theme organization.
+
+## 5. Implement Neighborhood Expansion Algorithms [pending]
+### Dependencies: 5.4
+### Description: Build algorithms for expanding query context through graph neighborhood exploration
+### Details:
+Create neighborhood expansion algorithms for broad/ambiguous queries. Implement multi-hop traversal with relevance scoring. Build query expansion through graph structure exploration. Support configurable expansion depth and filtering criteria for relevant neighbors.
+
+## 6. Optimize Graph Storage and Traversal Performance [pending]
+### Dependencies: 5.5
+### Description: Implement efficient graph storage schema and optimize traversal algorithms for performance
+### Details:
+Design optimized database schema for graph_nodes and graph_edges tables with proper indexing. Implement efficient graph traversal algorithms with caching strategies. Create adjacency list representations for fast neighborhood queries. Add performance monitoring and optimization for large-scale graphs.
+

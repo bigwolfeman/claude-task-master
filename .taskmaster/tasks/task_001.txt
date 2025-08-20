@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Setup Context Engine Foundation Structure
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Create the foundational TypeScript structure for the context engine module with proper types, interfaces, and base classes
+# Details:
+Create src/context-engine/ directory structure with orchestrator.ts, types.ts, and subdirectories for ingest/, retrieve/, rank/, pack/, router/, compress/, cache/, and metrics/. Define core TypeScript interfaces including AtomType, Atom, Chunk, Usefulness, Proof, QueryPlan, and ContextResponse. Implement proper ESM/CJS interop following existing codebase patterns. Ensure Biome compliance and TypeScript configuration alignment.
+
+# Test Strategy:
+Unit tests for type definitions and interface contracts. Verify TypeScript compilation without errors using tsc --noEmit. Test ESM/CJS interop with existing codebase modules.

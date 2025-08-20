@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Implement Hybrid Retrieval System
+# Status: pending
+# Dependencies: 4, 5
+# Priority: high
+# Description: Build the core retrieval engine combining BM25, dense embeddings, and fusion techniques
+# Details:
+Create src/context-engine/retrieve/hybrid.ts implementing BM25 + dense embedding retrieval with RRF fusion (B=60 constant). Support multi-query generation and optional HyDE (Hypothetical Document Embeddings). Implement embedding caching and batch processing. Add support for query expansion and reformulation. Include configurable retrieval strategies (GraphFirst, TreeFirst, EvidenceFirst).
+
+# Test Strategy:
+Test BM25 and dense retrieval accuracy separately and combined. Verify RRF fusion algorithm correctness. Test multi-query generation and HyDE effectiveness on sample queries.

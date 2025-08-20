@@ -1,0 +1,11 @@
+# Task ID: 11
+# Title: Build Extractive Compression System
+# Status: pending
+# Dependencies: 10
+# Priority: medium
+# Description: Implement LLMLingua-style compression with entity/number preservation
+# Details:
+Create src/context-engine/compress/extractive.ts with extractive compression maintaining ≤160 tokens/snippet while preserving entities, numbers, and IDs. Support optional sidecar HTTP service integration with health checks and timeouts. Implement compression ratio optimization and quality validation. Add fallback mechanisms for service unavailability.
+
+# Test Strategy:
+Test compression ratio vs. information retention trade-offs. Verify entity/number preservation accuracy. Test sidecar integration with various failure scenarios.
