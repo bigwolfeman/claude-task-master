@@ -8,13 +8,17 @@ export type AtomType = 'ENT' | 'NUM' | 'DATE' | 'REL';
 
 export interface Atom {
 	id: string;
+	chunkId: string;
 	type: AtomType;
-	surface: string;
-	norm: string;
+	text: string;
+	confidence: number;
+	metadata: Record<string, unknown>;
 	provenance: {
-		chunkId: string;
 		offset: number;
+		length: number;
 	};
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface Chunk {
@@ -23,10 +27,10 @@ export interface Chunk {
 	text: string;
 	tokens: number;
 	embedding?: number[];
-	start?: number;
-	end?: number;
-	authority?: number;
+	metadata: Record<string, unknown>;
 	recency?: number;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface Usefulness {
@@ -71,8 +75,11 @@ export interface Document {
 	id: string;
 	uri: string;
 	title: string;
+	content: string;
 	authority: number;
+	metadata: Record<string, unknown>;
 	createdAt: string;
+	updatedAt: string;
 }
 
 export interface GraphNode {
@@ -83,44 +90,55 @@ export interface GraphNode {
 }
 
 export interface GraphEdge {
+	id: string;
 	sourceId: string;
 	targetId: string;
-	edgeType: string;
+	type: string;
 	weight: number;
+	metadata: Record<string, unknown>;
 }
 
 export interface Summary {
 	id: string;
-	level: number;
-	parentId?: string;
-	summary: string;
-	childChunks: string[];
+	chunkIds: string[];
+	text: string;
 	tokens: number;
+	metadata: Record<string, unknown>;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface CoverageMatrix {
+	id: string;
 	chunkId: string;
 	atomIds: string[];
 	coverageScore: number;
+	metadata: Record<string, unknown>;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface PairwiseSignal {
+	id: string;
 	queryId: string;
-	winnerId: string;
-	loserId: string;
-	signal: string;
+	chunkId1: string;
+	chunkId2: string;
+	signal: number;
 	weight: number;
+	metadata: Record<string, unknown>;
 	timestamp: string;
 }
 
 export interface AnswerMetrics {
 	queryId: string;
-	coverage: number;
-	conflicts: number;
-	supportStyle: string;
-	decidedBy: string;
-	tokensSaved: number;
+	query: string;
+	answer: string;
+	relevanceScore: number;
+	accuracyScore: number;
+	completenessScore: number;
 	tierUsed: string;
+	metadata: Record<string, unknown>;
+	timestamp: string;
 }
 
 export interface RetrievalCandidate {
