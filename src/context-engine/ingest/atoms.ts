@@ -78,11 +78,11 @@ export class AtomExtractor {
 				confidence,
 				extractionTime,
 				metadata: {
-					entitiesFound: filteredAtoms.filter(a => a.type === 'entity').length,
-					conceptsFound: filteredAtoms.filter(a => a.type === 'concept').length,
-					relationshipsFound: filteredAtoms.filter(a => a.type === 'relationship').length,
-					codeElementsFound: filteredAtoms.filter(a => a.type === 'code_element').length,
-					markdownElementsFound: filteredAtoms.filter(a => a.type === 'markdown_element').length
+					entitiesFound: filteredAtoms.filter(a => a.type === 'ENT').length,
+					conceptsFound: filteredAtoms.filter(a => a.type === 'REL').length,
+					relationshipsFound: filteredAtoms.filter(a => a.type === 'REL').length,
+					codeElementsFound: filteredAtoms.filter(a => a.type === 'ENT').length,
+					markdownElementsFound: filteredAtoms.filter(a => a.type === 'ENT').length
 				}
 			};
 		} catch (error) {
@@ -109,15 +109,17 @@ export class AtomExtractor {
 		const atoms: Atom[] = [];
 		const text = chunk.text;
 		const language = chunk.metadata?.language || 'unknown';
+		const chunkId: string = chunk.id || `chunk_${Date.now()}`;
 
 		// Extract function definitions
 		const functionMatches = this.extractFunctions(text, language);
 		functionMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_func_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'code_element',
-				content: match.name,
+				id: `${chunkId}_func_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.name,
+				confidence: 0.9,
 				metadata: {
 					elementType: 'function',
 					language,
@@ -127,7 +129,10 @@ export class AtomExtractor {
 					startLine: match.startLine,
 					endLine: match.endLine
 				},
-				confidence: 0.9,
+				provenance: {
+					offset: match.startLine,
+					length: match.endLine - match.startLine + 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -137,10 +142,11 @@ export class AtomExtractor {
 		const classMatches = this.extractClasses(text, language);
 		classMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_class_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'code_element',
-				content: match.name,
+				id: `${chunkId}_class_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.name,
+				confidence: 0.9,
 				metadata: {
 					elementType: 'class',
 					language,
@@ -151,7 +157,10 @@ export class AtomExtractor {
 					startLine: match.startLine,
 					endLine: match.endLine
 				},
-				confidence: 0.9,
+				provenance: {
+					offset: match.startLine,
+					length: match.endLine - match.startLine + 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -161,10 +170,11 @@ export class AtomExtractor {
 		const variableMatches = this.extractVariables(text, language);
 		variableMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_var_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'code_element',
-				content: match.name,
+				id: `${chunkId}_var_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.name,
+				confidence: 0.8,
 				metadata: {
 					elementType: 'variable',
 					language,
@@ -173,7 +183,10 @@ export class AtomExtractor {
 					scope: match.scope,
 					line: match.line
 				},
-				confidence: 0.8,
+				provenance: {
+					offset: match.line,
+					length: 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -183,10 +196,11 @@ export class AtomExtractor {
 		const importMatches = this.extractImports(text, language);
 		importMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_import_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'code_element',
-				content: match.module,
+				id: `${chunkId}_import_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.module,
+				confidence: 0.95,
 				metadata: {
 					elementType: 'import',
 					language,
@@ -195,7 +209,10 @@ export class AtomExtractor {
 					alias: match.alias,
 					line: match.line
 				},
-				confidence: 0.95,
+				provenance: {
+					offset: match.line,
+					length: 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -210,22 +227,27 @@ export class AtomExtractor {
 	private async extractMarkdownAtoms(chunk: Chunk): Promise<Atom[]> {
 		const atoms: Atom[] = [];
 		const text = chunk.text;
+		const chunkId: string = chunk.id || `chunk_${Date.now()}`;
 
 		// Extract headers
 		const headerMatches = this.extractHeaders(text);
 		headerMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_header_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'markdown_element',
-				content: match.text,
+				id: `${chunkId}_header_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.text,
+				confidence: 0.95,
 				metadata: {
 					elementType: 'header',
 					level: match.level,
 					line: match.line,
 					section: match.text
 				},
-				confidence: 0.95,
+				provenance: {
+					offset: match.line,
+					length: 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -235,17 +257,21 @@ export class AtomExtractor {
 		const linkMatches = this.extractLinks(text);
 		linkMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_link_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'markdown_element',
-				content: match.text,
+				id: `${chunkId}_link_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.text,
+				confidence: 0.9,
 				metadata: {
 					elementType: 'link',
 					url: match.url,
 					text: match.text,
 					line: match.line
 				},
-				confidence: 0.9,
+				provenance: {
+					offset: match.line,
+					length: 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -255,10 +281,11 @@ export class AtomExtractor {
 		const codeBlockMatches = this.extractCodeBlocks(text);
 		codeBlockMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_codeblock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'markdown_element',
-				content: match.language || 'code',
+				id: `${chunkId}_codeblock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.language || 'code',
+				confidence: 0.9,
 				metadata: {
 					elementType: 'code_block',
 					language: match.language,
@@ -266,7 +293,10 @@ export class AtomExtractor {
 					startLine: match.startLine,
 					endLine: match.endLine
 				},
-				confidence: 0.9,
+				provenance: {
+					offset: match.startLine,
+					length: match.endLine - match.startLine + 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -276,10 +306,11 @@ export class AtomExtractor {
 		const listMatches = this.extractLists(text);
 		listMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_list_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'markdown_element',
-				content: match.type,
+				id: `${chunkId}_list_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.type,
+				confidence: 0.85,
 				metadata: {
 					elementType: 'list',
 					type: match.type,
@@ -287,7 +318,10 @@ export class AtomExtractor {
 					startLine: match.startLine,
 					endLine: match.endLine
 				},
-				confidence: 0.85,
+				provenance: {
+					offset: match.startLine,
+					length: match.endLine - match.startLine + 1
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -302,21 +336,26 @@ export class AtomExtractor {
 	private async extractTextAtoms(chunk: Chunk): Promise<Atom[]> {
 		const atoms: Atom[] = [];
 		const text = chunk.text;
+		const chunkId: string = chunk.id || `chunk_${Date.now()}`;
 
 		// Extract named entities (simple pattern-based approach)
 		const entityMatches = this.extractNamedEntities(text);
 		entityMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_entity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'entity',
-				content: match.text,
+				id: `${chunkId}_entity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'ENT',
+				text: match.text,
+				confidence: match.confidence,
 				metadata: {
 					entityType: match.type,
 					confidence: match.confidence,
 					position: match.position
 				},
-				confidence: match.confidence,
+				provenance: {
+					offset: match.position,
+					length: match.text.length
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -326,16 +365,20 @@ export class AtomExtractor {
 		const conceptMatches = this.extractKeyConcepts(text);
 		conceptMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_concept_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'concept',
-				content: match.text,
+				id: `${chunkId}_concept_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'REL',
+				text: match.text,
+				confidence: match.confidence,
 				metadata: {
 					importance: match.importance,
 					frequency: match.frequency,
 					context: match.context
 				},
-				confidence: match.confidence,
+				provenance: {
+					offset: text.indexOf(match.text),
+					length: match.text.length
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -345,17 +388,21 @@ export class AtomExtractor {
 		const relationshipMatches = this.extractRelationships(text);
 		relationshipMatches.forEach(match => {
 			atoms.push({
-				id: `${chunk.id}_rel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-				chunkId: chunk.id,
-				type: 'relationship',
-				content: match.relation,
+				id: `${chunkId}_rel_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				chunkId: chunkId,
+				type: 'REL',
+				text: match.relation,
+				confidence: match.confidence,
 				metadata: {
 					entity1: match.entity1,
 					entity2: match.entity2,
 					relation: match.relation,
 					confidence: match.confidence
 				},
-				confidence: match.confidence,
+				provenance: {
+					offset: text.indexOf(match.relation),
+					length: match.relation.length
+				},
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			});
@@ -696,7 +743,7 @@ export class AtomExtractor {
 				const importMatch = trimmed.match(/^from\s+([\w.]+)\s+import\s+(.+)/);
 				if (importMatch) {
 					const module = importMatch[1];
-					const items = importMatch[2].split(',').map(item => item.strip());
+					const items = importMatch[2].split(',').map(item => item.trim());
 					const alias = '';
 
 					imports.push({

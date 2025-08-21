@@ -1,46 +1,44 @@
 /**
- * index.ts
- * Main export file for the Context Engine module
+ * Context Engine - Main Export File
  * Provides access to all public APIs and types
  */
 
-// Core types and interfaces
-export type {
-	AtomType,
-	Atom,
-	Chunk,
-	Usefulness,
-	Proof,
-	QueryPlan,
-	ContextResponse,
-	Document,
-	GraphNode,
-	GraphEdge,
-	Summary,
-	CoverageMatrix,
-	PairwiseSignal,
-	AnswerMetrics,
-	RetrievalCandidate,
-	PackingResult,
-	RouterDecision,
-	CompressionResult,
-	CacheEntry,
-	MetricsData,
-	ConfigOptions
-} from './types.js';
+// Core types
+export * from './types.js';
 
 // Main orchestrator
-export { ContextOrchestrator } from './orchestrator.js';
+export * from './orchestrator.js';
 
-// Component interfaces
-export type {
-	StorageBackend,
-	HybridRetriever,
-	UsefulnessRanker,
-	MaxCoveragePacker,
-	AnswerabilityRouter,
-	ExtractiveCompressor
-} from './orchestrator.js';
+// Ingest pipeline components
+export * from './ingest/index.js';
+
+// Retrieval components
+export * from './retrieve/index.js';
+
+// Ranking components (to be implemented)
+// export * from './rank/index.js';
+
+// Packing components (to be implemented)
+// export * from './pack/index.js';
+
+// Routing components (to be implemented)
+// export * from './router/index.js';
+
+// Compression components (to be implemented)
+// export * from './compress/index.js';
+
+// Caching components (to be implemented)
+// export * from './cache/index.js';
+
+// Metrics components (to be implemented)
+// export * from './metrics/index.js';
+
+// Graph-specific modules (Task 5)
+export * from './ingest/graph.js';
+export * from './ingest/temporal.js';
+export * from './ingest/community-detection.js';
+export * from './ingest/neighborhood-expansion.js';
+export * from './ingest/graph-optimization.js';
 
 // Default configuration
 export const DEFAULT_CONFIG = {

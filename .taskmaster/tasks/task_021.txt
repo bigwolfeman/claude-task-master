@@ -1,7 +1,7 @@
-# Task ID: 15
+# Task ID: 21
 # Title: Implement MCP Tools and Server Integration
 # Status: pending
-# Dependencies: 13
+# Dependencies: 23
 # Priority: high
 # Description: Create MCP tools for context operations and integrate with existing MCP server architecture
 # Details:

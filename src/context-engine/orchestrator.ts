@@ -16,11 +16,7 @@ import type {
 	ConfigOptions
 } from './types.js';
 
-export interface StorageBackend {
-	// Placeholder interface - will be implemented in store.ts
-	connect(): Promise<void>;
-	disconnect(): Promise<void>;
-}
+import type { StorageBackend } from './ingest/store.js';
 
 export interface HybridRetriever {
 	// Placeholder interface - will be implemented in retrieve/hybrid.ts

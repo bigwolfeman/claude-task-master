@@ -1,0 +1,11 @@
+# Task ID: 29
+# Title: Build Cross-Encoder Reranking
+# Status: pending
+# Dependencies: 6
+# Priority: medium
+# Description: Implement cross-encoder reranking for improved retrieval precision
+# Details:
+Create src/context-engine/retrieve/rerank_ce.ts with local cross-encoder models and API fallback. Implement efficient batch reranking with proper timeout handling. Support configurable model selection and fallback chains. Include caching for repeated query-document pairs. Add health checks for external reranking services.
+
+# Test Strategy:
+Test reranking accuracy improvements over base retrieval. Verify timeout handling and fallback mechanisms. Performance tests for batch processing efficiency.

@@ -1,7 +1,7 @@
-# Task ID: 14
+# Task ID: 22
 # Title: Create CLI Commands and Integration
 # Status: pending
-# Dependencies: 13
+# Dependencies: 23
 # Priority: high
 # Description: Implement CLI commands for ingest, build-graph, query, and proof operations
 # Details:

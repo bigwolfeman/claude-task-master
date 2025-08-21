@@ -1,7 +1,7 @@
-# Task ID: 9
+# Task ID: 27
 # Title: Build Max-Coverage Packing Algorithm
 # Status: pending
-# Dependencies: 8
+# Dependencies: 28
 # Priority: high
 # Description: Implement intelligent packing of evidence under strict token budgets with atom coverage maximization
 # Details:
@@ -18,25 +18,25 @@ Test coverage calculation accuracy and sparse matrix operations. Verify max-cove
 Build sparse matrix representation for atom coverage with memory-efficient data structures. Implement coverage calculation, intersection, and union operations. Add methods for coverage score computation and matrix manipulation optimized for sparse data.
 
 ## 2. Build Budgeted Max-Coverage Algorithm Core [pending]
-### Dependencies: 9.1
+### Dependencies: 27.1
 ### Description: Implement the core max-coverage algorithm in max_coverage.ts with budget constraints and greedy selection strategy
 ### Details:
 Create budgeted max-coverage algorithm using greedy approach to maximize atom coverage under token budget constraints. Implement candidate selection logic with coverage gain calculation and budget tracking.
 
 ## 3. Add MMR Integration with Lambda Parameter [pending]
-### Dependencies: 9.2
+### Dependencies: 27.2
 ### Description: Integrate Maximal Marginal Relevance with λ≈0.3 parameter for diversity-relevance balance in candidate selection
 ### Details:
 Implement MMR scoring with configurable lambda parameter (default 0.3) to balance relevance and diversity. Add similarity calculation and marginal relevance computation to enhance selection quality.
 
 ## 4. Create Knapsack Fallback Mechanism [pending]
-### Dependencies: 9.2
+### Dependencies: 27.2
 ### Description: Implement knapsack optimization as fallback when max-coverage algorithm doesn't meet performance requirements
 ### Details:
 Build knapsack optimization algorithm as alternative packing strategy. Implement dynamic programming approach for optimal subset selection under budget constraints with fallback triggering logic.
 
 ## 5. Implement Dynamic Budget Allocation and Token Counting [pending]
-### Dependencies: 9.3, 9.4
+### Dependencies: 27.3, 27.4
 ### Description: Add dynamic budget management with accurate token counting and priority-based allocation mechanisms
 ### Details:
 Implement token counting system with accurate measurement for different content types. Add dynamic budget allocation based on priority levels and remaining capacity. Include budget enforcement and overflow handling.

@@ -1,7 +1,7 @@
-# Task ID: 8
+# Task ID: 28
 # Title: Implement Usefulness 2.0 Ranking System
 # Status: pending
-# Dependencies: 7
+# Dependencies: 29
 # Priority: high
 # Description: Build the advanced ranking system with pointwise utility calculation and pairwise learning
 # Details:
@@ -18,31 +18,31 @@ Unit tests for utility calculation components. Test pairwise learning convergenc
 Implement src/context-engine/rank/usefulness.ts with pointwise utility calculation: U = α·Rel + β·InfoGain + γ·Trust + δ·Reusability − η·TokenCost − ζ·ConflictRisk. Include individual factor calculation methods and weight application logic.
 
 ## 2. Build RankNet/Bradley-Terry Pairwise Learning [pending]
-### Dependencies: 8.1
+### Dependencies: 28.1
 ### Description: Implement pairwise ranking algorithms for learning from comparative judgments
 ### Details:
 Create src/context-engine/rank/pairwise.ts with RankNet neural network and Bradley-Terry probabilistic model implementations. Include gradient computation, parameter updates, and convergence monitoring.
 
 ## 3. Implement Online Learning from Implicit Judgments [pending]
-### Dependencies: 8.2
+### Dependencies: 28.2
 ### Description: Build system to learn from user interactions and implicit feedback signals
 ### Details:
 Extend pairwise learning with implicit judgment collection from user clicks, dwell time, and selection patterns. Implement online parameter updates and adaptive learning rates.
 
 ## 4. Create Bubble Stabilization Algorithm [pending]
-### Dependencies: 8.1, 8.2
+### Dependencies: 28.1, 28.2
 ### Description: Implement 1-2 pass bubble sort stabilization with early cutoff thresholds
 ### Details:
 Create src/context-engine/rank/bubble.ts with efficient bubble stabilization for ranking refinement. Include early termination conditions, pass limit controls, and stability metrics.
 
 ## 5. Add Configurable Weights and Learning Rates [pending]
-### Dependencies: 8.1, 8.2, 8.3
+### Dependencies: 28.1, 28.2, 28.3
 ### Description: Implement configuration system for utility weights and learning parameters
 ### Details:
 Build configuration management for α, β, γ, δ, η, ζ weights and learning rates. Include runtime adjustment capabilities, configuration validation, and parameter persistence.
 
 ## 6. Build Evaluation and Validation Mechanisms [pending]
-### Dependencies: 8.4, 8.5
+### Dependencies: 28.4, 28.5
 ### Description: Create comprehensive testing and validation system for ranking quality assessment
 ### Details:
 Implement ranking evaluation metrics (NDCG, MAP, MRR), A/B testing framework, and synthetic data generation for validation. Include performance benchmarking and convergence analysis tools.

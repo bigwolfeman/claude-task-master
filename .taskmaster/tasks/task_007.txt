@@ -1,11 +1,11 @@
 # Task ID: 7
-# Title: Build Cross-Encoder Reranking
+# Title: Comprehensive Unit Testing Suite for Context Engine
 # Status: pending
-# Dependencies: 6
-# Priority: medium
-# Description: Implement cross-encoder reranking for improved retrieval precision
+# Dependencies: 1, 3, 4, 5
+# Priority: high
+# Description: Create a complete unit testing framework that thoroughly tests all implemented context engine components including storage backend, chunking system, atom extraction, RAPTOR system, knowledge graph construction, and related functionality.
 # Details:
-Create src/context-engine/retrieve/rerank_ce.ts with local cross-encoder models and API fallback. Implement efficient batch reranking with proper timeout handling. Support configurable model selection and fallback chains. Include caching for repeated query-document pairs. Add health checks for external reranking services.
+Implement comprehensive test suite in tests/context-engine/ directory structure mirroring src/context-engine/. Create test files for each component: test-chunker.spec.ts (chunking algorithms, token counting, MD/code awareness), test-atoms.spec.ts (entity/number/date extraction accuracy), test-raptor.spec.ts (hierarchical summarization, clustering, tree structure), test-graph.spec.ts (entity extraction, relationship building, community detection, neighborhood expansion), test-orchestrator.spec.ts (end-to-end workflow testing). Use Jest/Vitest framework with proper mocking for LLM calls, database operations, and external services. Include integration tests for component interactions. Add test data fixtures representing various document types (markdown, code, JSON). Implement performance benchmarks for critical algorithms. Create test utilities for database seeding, mock LLM responses, and assertion helpers. Ensure tests cover edge cases, error handling, and boundary conditions. Add code coverage reporting with minimum 80% threshold. Include property-based testing for algorithmic components using libraries like fast-check.
 
 # Test Strategy:
-Test reranking accuracy improvements over base retrieval. Verify timeout handling and fallback mechanisms. Performance tests for batch processing efficiency.
+Run test suite with npm test or yarn test. Verify all tests pass with proper assertions and no false positives. Check code coverage reports meet minimum thresholds for each module. Run integration tests to verify component interactions work correctly. Performance test critical paths under realistic data loads. Validate mock implementations accurately represent real service behavior. Test error handling paths and edge cases. Verify test isolation and cleanup procedures. Run tests in CI/CD pipeline to ensure consistent results across environments.

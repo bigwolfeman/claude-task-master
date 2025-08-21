@@ -1,6 +1,6 @@
 # Task ID: 3
 # Title: Build Text Chunking and Atom Extraction
-# Status: pending
+# Status: done
 # Dependencies: 2
 # Priority: high
 # Description: Implement intelligent text chunking with Markdown/code awareness and atomic fact extraction

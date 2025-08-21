@@ -1,7 +1,7 @@
-# Task ID: 11
+# Task ID: 25
 # Title: Build Extractive Compression System
 # Status: pending
-# Dependencies: 10
+# Dependencies: 26
 # Priority: medium
 # Description: Implement LLMLingua-style compression with entity/number preservation
 # Details:
