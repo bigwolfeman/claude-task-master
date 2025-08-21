@@ -4,3 +4,5 @@
  */
 
 export * from './usefulness.js';
+export * from './pairwise.js';
+export * from './bubble.js';

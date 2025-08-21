@@ -97,6 +97,26 @@ global.testUtils = {
 		...overrides
 	}),
 	
+	createMockSummary: (overrides = {}) => ({
+		id: 'test-summary-1',
+		chunkIds: ['test-chunk-1', 'test-chunk-2'],
+		text: 'This is a test summary of multiple chunks.',
+		metadata: { type: 'abstractive', level: 1 },
+		createdAt: '2024-01-01T00:00:00Z',
+		updatedAt: '2024-01-01T00:00:00Z',
+		...overrides
+	}),
+	
+	createMockGraphNode: (overrides = {}) => ({
+		id: 'test-node-1',
+		type: 'entity',
+		label: 'test entity',
+		metadata: { source: 'extraction', confidence: 0.9 },
+		createdAt: '2024-01-01T00:00:00Z',
+		updatedAt: '2024-01-01T00:00:00Z',
+		...overrides
+	}),
+	
 	// Performance measurement helpers
 	measurePerformance: async (fn: () => Promise<any>, iterations = 1) => {
 		const times: number[] = [];
@@ -124,6 +144,8 @@ declare global {
 		createMockDocument: (overrides?: any) => any;
 		createMockChunk: (overrides?: any) => any;
 		createMockAtom: (overrides?: any) => any;
+		createMockSummary: (overrides?: any) => any;
+		createMockGraphNode: (overrides?: any) => any;
 		measurePerformance: (fn: () => Promise<any>, iterations?: number) => Promise<{
 			avg: number;
 			min: number;
