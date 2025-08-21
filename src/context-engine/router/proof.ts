@@ -4,7 +4,8 @@
  * Computes coverage percentage, conflict detection, and support style determination
  */
 
-import type { PackingResult, PackingCandidate } from '../pack/max_coverage.js';
+import type { PackingResult } from '../types.js';
+import type { PackingCandidate } from '../pack/max_coverage.js';
 import type { Chunk, Atom } from '../types.js';
 
 export interface ProofMetrics {

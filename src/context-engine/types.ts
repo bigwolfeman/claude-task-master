@@ -24,6 +24,8 @@ export interface Atom {
 export interface Chunk {
 	id: string;
 	docId: string;
+	documentId: string; // Added for hybrid retrieval compatibility
+	chunkIndex: number; // Added for hybrid retrieval compatibility
 	text: string;
 	tokens: number;
 	embedding?: number[];
@@ -149,11 +151,28 @@ export interface RetrievalCandidate {
 }
 
 export interface PackingResult {
-	chunks: Chunk[];
+	selectedCandidates: Array<{
+		id: string;
+		candidate: any; // This should be more specific based on actual usage
+		atomIds: string[];
+		tokenCost: number;
+		coverageGain: number;
+		utilityScore: number;
+		priority: 'high' | 'medium' | 'low';
+		estimatedTokens: number;
+	}>;
 	totalTokens: number;
-	coverage: number;
-	atomsCovered: string[];
-	mmrScore: number;
+	totalCoverage: number;
+	coveragePercentage: number;
+	budgetUtilization: number;
+	metadata: {
+		algorithm: string;
+		iterations: number;
+		processingTime: number;
+		coverageMatrixId: string;
+	};
+	// For compatibility with orchestrator
+	chunks?: Chunk[];
 }
 
 export interface RouterDecision {

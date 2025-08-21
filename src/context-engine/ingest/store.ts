@@ -429,6 +429,8 @@ export class SQLiteStorageBackend implements StorageBackend {
 		return {
 			id: row.id,
 			docId: row.doc_id,
+			documentId: row.doc_id, // Added required field (same as docId)
+			chunkIndex: row.chunk_index || 0, // Added required field
 			text: row.text,
 			tokens: row.tokens,
 			embedding: row.embedding ? Array.from(new Float32Array(row.embedding.buffer)) : undefined,
@@ -467,6 +469,8 @@ export class SQLiteStorageBackend implements StorageBackend {
 		return rows.map(row => ({
 			id: row.id,
 			docId: row.doc_id,
+			documentId: row.doc_id, // Added required field (same as docId)
+			chunkIndex: row.chunk_index || 0, // Added required field
 			text: row.text,
 			tokens: row.tokens,
 			embedding: row.embedding ? Array.from(new Float32Array(row.embedding.buffer)) : undefined,
@@ -482,6 +486,8 @@ export class SQLiteStorageBackend implements StorageBackend {
 		return rows.map(row => ({
 			id: row.id,
 			docId: row.doc_id,
+			documentId: row.doc_id, // Added required field (same as docId)
+			chunkIndex: row.chunk_index || 0, // Added required field
 			text: row.text,
 			tokens: row.tokens,
 			embedding: row.embedding ? Array.from(new Float32Array(row.embedding.buffer)) : undefined,

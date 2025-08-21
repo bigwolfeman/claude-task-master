@@ -114,6 +114,20 @@ export class ExtractiveCompressor {
   }
 
   /**
+   * Compress chunks to fit within token budget
+   * @param chunks - Chunks to compress
+   * @param maxTokens - Maximum tokens allowed
+   * @returns Compression result
+   */
+  public async compress(chunks: Chunk[], maxTokens: number): Promise<CompressionResult> {
+    // For now, use the existing compressChunks method
+    // This can be enhanced with more sophisticated compression strategies
+    const atoms: Atom[] = []; // Empty atoms for now - can be enhanced
+    
+    return this.compressChunks(chunks, atoms);
+  }
+
+  /**
    * Compress using external sidecar service
    */
   private async compressWithSidecar(

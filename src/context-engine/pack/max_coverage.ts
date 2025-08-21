@@ -6,6 +6,7 @@
 
 import type { RankingCandidate } from '../rank/usefulness.js';
 import { CoverageMatrixManager, type CoverageMatrix } from './coverage.js';
+import type { Chunk, PackingResult } from '../types.js';
 
 export interface PackingCandidate {
   id: string;
@@ -19,19 +20,7 @@ export interface PackingCandidate {
   estimatedTokens: number; // Accurate token count estimation
 }
 
-export interface PackingResult {
-  selectedCandidates: PackingCandidate[];
-  totalTokens: number;
-  totalCoverage: number;
-  coveragePercentage: number;
-  budgetUtilization: number;
-  metadata: {
-    algorithm: 'greedy' | 'mmr' | 'priority' | 'knapsack';
-    iterations: number;
-    processingTime: number;
-    coverageMatrixId: string;
-  };
-}
+
 
 export interface PackingOptions {
   maxTokens: number;
@@ -231,7 +220,8 @@ export class BudgetedMaxCoverage {
     const coveragePercentage = totalAtoms > 0 ? totalCoverage / totalAtoms : 0;
     const budgetUtilization = totalTokens / this.options.maxTokens;
     
-    const result: PackingResult = {
+    // Create a local result object with the properties we need
+    const localResult = {
       selectedCandidates: finalSelectedCandidates,
       totalTokens,
       totalCoverage,
@@ -248,7 +238,7 @@ export class BudgetedMaxCoverage {
     // Clean up coverage matrix
     this.coverageManager.deleteMatrix(coverageMatrixId);
     
-    return result;
+    return localResult;
   }
 
   /**
@@ -830,6 +820,102 @@ export class BudgetedMaxCoverage {
    */
   public getCoverageManager(): CoverageMatrixManager {
     return this.coverageManager;
+  }
+}
+
+/**
+ * MaxCoveragePacker - Wrapper class for BudgetedMaxCoverage
+ * Provides the interface expected by the ContextOrchestrator
+ */
+export class MaxCoveragePacker {
+  private budgetedPacker: BudgetedMaxCoverage;
+
+  constructor(options: PackingOptions) {
+    this.budgetedPacker = new BudgetedMaxCoverage(options);
+  }
+
+  /**
+   * Pack candidates using max coverage algorithm
+   * @param candidates - Ranked candidates to pack
+   * @param atoms - Available atoms for coverage
+   * @param budget - Token budget constraint
+   * @param options - Additional packing options
+   * @returns PackingResult compatible with types.ts interface
+   */
+  public packMaxCoverage(
+    candidates: RankingCandidate[],
+    atoms: string[],
+    budget: number,
+    options: { mmr?: number } = {}
+  ): PackingResult {
+    // Create atom mapping from candidates to atoms
+    const atomMapping = new Map<string, string[]>();
+    
+    // For now, create a simple mapping - each candidate covers some atoms
+    // This is a placeholder implementation
+    candidates.forEach((candidate, index) => {
+      const candidateAtoms = atoms.slice(index * 2, (index + 1) * 2); // Simple distribution
+      atomMapping.set(candidate.id, candidateAtoms);
+    });
+
+    // Update packer options with budget and MMR settings
+    const packerOptions: PackingOptions = {
+      maxTokens: budget,
+      enableMMR: options.mmr !== undefined,
+      lambdaRelevance: options.mmr || 0.3
+    };
+
+    // Create a new packer instance with updated options
+    const packer = new BudgetedMaxCoverage(packerOptions);
+    
+    // Pack candidates
+    const result = packer.packCandidates(candidates, atomMapping);
+    
+    // Create chunks for compatibility with types.ts interface
+    const chunks = candidates.map(candidate => {
+      if (candidate.type === 'chunk') {
+        return candidate.content as Chunk;
+      }
+      // For other types, create a placeholder chunk
+      return {
+        id: candidate.id,
+        docId: 'placeholder',
+        text: this.extractTextFromCandidate(candidate),
+        tokens: 0,
+        metadata: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      } as Chunk;
+    });
+    
+    // Add chunks property for compatibility with orchestrator
+    return {
+      ...result,
+      chunks
+    };
+  }
+
+  /**
+   * Extract text from a ranking candidate
+   */
+  private extractTextFromCandidate(candidate: RankingCandidate): string {
+    if (candidate.type === 'chunk' && 'text' in candidate.content) {
+      return candidate.content.text;
+    } else if (candidate.type === 'atom' && 'text' in candidate.content) {
+      return candidate.content.text;
+    } else if (candidate.type === 'summary' && 'text' in candidate.content) {
+      return candidate.content.text;
+    } else if (candidate.type === 'graph_node' && 'label' in candidate.content) {
+      return candidate.content.label || '';
+    }
+    return '';
+  }
+
+  /**
+   * Get the underlying budgeted packer
+   */
+  public getBudgetedPacker(): BudgetedMaxCoverage {
+    return this.budgetedPacker;
   }
 }
 

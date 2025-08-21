@@ -575,7 +575,7 @@ export class HybridRetrievalSystem {
     }
     
     // Bonus for chunks that are part of important summaries
-    if (summary.metadata?.importance) {
+    if (summary.metadata?.importance && typeof summary.metadata.importance === 'number') {
       score += summary.metadata.importance * 0.5;
     }
     

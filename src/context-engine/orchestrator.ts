@@ -9,46 +9,21 @@ import type {
 	QueryPlan,
 	Chunk,
 	Proof,
-	RetrievalCandidate,
 	PackingResult,
-	RouterDecision,
 	CompressionResult,
-	ConfigOptions
+	ConfigOptions,
+	Document
 } from './types.js';
 
+import type { RankingCandidate, RankingResult } from './rank/usefulness.js';
+import type { ProofMetrics } from './router/proof.js';
+
 import type { StorageBackend } from './ingest/store.js';
-
-export interface HybridRetriever {
-	// Placeholder interface - will be implemented in retrieve/hybrid.ts
-	retrieve(plan: QueryPlan): Promise<RetrievalCandidate[]>;
-}
-
-export interface UsefulnessRanker {
-	// Placeholder interface - will be implemented in rank/usefulness.ts
-	rankCandidates(candidates: RetrievalCandidate[], query: string): Promise<RetrievalCandidate[]>;
-	bubbleStabilize(candidates: RetrievalCandidate[]): Promise<RetrievalCandidate[]>;
-}
-
-export interface MaxCoveragePacker {
-	// Placeholder interface - will be implemented in pack/max_coverage.ts
-	packMaxCoverage(
-		candidates: RetrievalCandidate[],
-		atoms: string[],
-		budget: number,
-		options: { mmr: number }
-	): Promise<PackingResult>;
-}
-
-export interface AnswerabilityRouter {
-	// Placeholder interface - will be implemented in router/route.ts
-	computeProof(packed: PackingResult, query: string): Promise<Proof>;
-	decideTier(proof: Proof, plan: QueryPlan, budget: number): 'none' | 'small' | 'premium';
-}
-
-export interface ExtractiveCompressor {
-	// Placeholder interface - will be implemented in compress/extractive.ts
-	compress(chunks: Chunk[], budget: number): Promise<CompressionResult>;
-}
+import { HybridRetrievalSystem } from './retrieve/hybrid.js';
+import { UsefulnessRanker } from './rank/usefulness.js';
+import { MaxCoveragePacker } from './pack/max_coverage.js';
+import { AnswerabilityProofRouter } from './router/route.js';
+import { ExtractiveCompressor } from './compress/extractive.js';
 
 /**
  * Context Engine Orchestrator
@@ -56,19 +31,19 @@ export interface ExtractiveCompressor {
  */
 export class ContextOrchestrator {
 	private store: StorageBackend;
-	private retriever: HybridRetriever;
+	private retriever: HybridRetrievalSystem;
 	private ranker: UsefulnessRanker;
 	private packer: MaxCoveragePacker;
-	private router: AnswerabilityRouter;
+	private router: AnswerabilityProofRouter;
 	private compressor?: ExtractiveCompressor;
 	private config: ConfigOptions;
 
 	constructor(
 		store: StorageBackend,
-		retriever: HybridRetriever,
+		retriever: HybridRetrievalSystem,
 		ranker: UsefulnessRanker,
 		packer: MaxCoveragePacker,
-		router: AnswerabilityRouter,
+		router: AnswerabilityProofRouter,
 		compressor?: ExtractiveCompressor,
 		config?: Partial<ConfigOptions>
 	) {
@@ -92,12 +67,32 @@ export class ContextOrchestrator {
 			// Step 1: Query Planning
 			const plan = await this.analyzeQuery(query, budget);
 			
-			// Step 2: Retrieval
-			const candidates = await this.retriever.retrieve(plan);
+			// Step 2: Retrieval - need to provide documents and chunks
+			// For now, using empty arrays as placeholders
+			const documents: Document[] = [];
+			const chunks: Chunk[] = [];
+			const candidates = await this.retriever.retrieve(query, documents, chunks);
 			
-			// Step 3: Ranking
-			const reranked = await this.ranker.rankCandidates(candidates, query);
-			const stabilized = await this.ranker.bubbleStabilize(reranked);
+			// Step 3: Ranking - need to provide context
+			// For now, create placeholder chunks from RetrievalResult
+			// In a real implementation, we would fetch the actual chunks from the store
+			const candidatesForRanking = candidates.map(result => ({
+				id: result.chunkId,
+				docId: result.metadata.documentId as string || 'placeholder',
+				documentId: result.metadata.documentId as string || 'placeholder', // Added required field
+				chunkIndex: (result.metadata.chunkIndex as number) || 0, // Added required field
+				text: `Retrieved chunk ${result.chunkId}`, // Placeholder text
+				tokens: 0,
+				metadata: result.metadata,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			} as Chunk));
+			const context = {
+				existingEvidence: [],
+				queryComplexity: 0.5
+			};
+			const reranked = await this.ranker.rankCandidates(candidatesForRanking, query, context);
+			const stabilized = await this.ranker.bubbleStabilize(reranked.candidates);
 			
 			// Step 4: Atom Extraction
 			const atoms = await this.extractAtoms(stabilized);
@@ -106,14 +101,14 @@ export class ContextOrchestrator {
 			const packed = await this.packer.packMaxCoverage(stabilized, atoms, budget, { mmr: 0.3 });
 			
 			// Step 6: Proof Computation
-			const proof = await this.router.computeProof(packed, query);
+			const proofMetrics = await this.router.computeProof(packed, query);
 			
 			// Step 7: Tier Decision
-			const tier = this.router.decideTier(proof, plan, budget);
+			const tier = this.router.decideTier(proofMetrics, plan, budget);
 
 			// Step 8: Response Generation
 			if (tier === 'none') {
-				return this.generateDeterministicResponse(packed, query, proof, tier);
+				return this.generateDeterministicResponse(packed, query, proofMetrics, tier);
 			}
 
 			// Step 9: Compression (if compressor available)
@@ -128,7 +123,12 @@ export class ContextOrchestrator {
 				brief,
 				context: compressed.compressedChunks,
 				citations: this.generateCitations(compressed.compressedChunks),
-				proof,
+				proof: {
+					coverage: proofMetrics.coverage,
+					conflicts: proofMetrics.conflicts,
+					supportStyle: proofMetrics.supportStyle,
+					selected: compressed.compressedChunks.map(chunk => ({ chunkId: chunk.id }))
+				},
 				plannedTier: tier
 			};
 		} catch (error) {
@@ -216,17 +216,34 @@ export class ContextOrchestrator {
 	/**
 	 * Extract atoms from ranked candidates
 	 */
-	private async extractAtoms(candidates: RetrievalCandidate[]): Promise<string[]> {
+	private async extractAtoms(candidates: RankingCandidate[]): Promise<string[]> {
 		// Placeholder implementation - will be enhanced with actual atom extraction
 		const atoms: string[] = [];
 		
 		for (const candidate of candidates) {
 			// Simple tokenization for now - will be replaced with proper NLP
-			const tokens = candidate.chunk.text.split(/\s+/);
+			const text = this.extractTextFromCandidate(candidate);
+			const tokens = text.split(/\s+/);
 			atoms.push(...tokens.slice(0, 10)); // Limit atoms per chunk
 		}
 		
-		return [...new Set(atoms)]; // Remove duplicates
+		return Array.from(new Set(atoms)); // Remove duplicates
+	}
+
+	/**
+	 * Extract text content from a ranking candidate
+	 */
+	private extractTextFromCandidate(candidate: RankingCandidate): string {
+		if (candidate.type === 'chunk' && 'text' in candidate.content) {
+			return candidate.content.text;
+		} else if (candidate.type === 'atom' && 'text' in candidate.content) {
+			return candidate.content.text;
+		} else if (candidate.type === 'summary' && 'text' in candidate.content) {
+			return candidate.content.text;
+		} else if (candidate.type === 'graph_node' && 'label' in candidate.content) {
+			return candidate.content.label || '';
+		}
+		return '';
 	}
 
 	/**
@@ -235,7 +252,7 @@ export class ContextOrchestrator {
 	private generateDeterministicResponse(
 		packed: PackingResult,
 		query: string,
-		proof: Proof,
+		proofMetrics: ProofMetrics,
 		tier: 'none'
 	): ContextResponse {
 		// Simple template-based response generation
@@ -245,7 +262,12 @@ export class ContextOrchestrator {
 			brief,
 			context: packed.chunks,
 			citations: this.generateCitations(packed.chunks),
-			proof,
+			proof: {
+				coverage: proofMetrics.coverage,
+				conflicts: proofMetrics.conflicts,
+				supportStyle: proofMetrics.supportStyle,
+				selected: packed.chunks.map(chunk => ({ chunkId: chunk.id }))
+			},
 			plannedTier: tier
 		};
 	}

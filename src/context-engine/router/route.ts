@@ -5,8 +5,9 @@
  */
 
 import type { ProofMetrics } from './proof.js';
-import type { PackingResult } from '../pack/max_coverage.js';
-import type { Chunk, Atom } from '../types.js';
+import type { PackingResult } from '../types.js';
+import type { Chunk, Atom, Proof, QueryPlan } from '../types.js';
+import { ProofCalculator } from './proof.js';
 
 export type LLMTier = 'none' | 'small' | 'premium';
 
@@ -131,12 +132,14 @@ export class AnswerabilityProofRouter {
    */
   private analyzeRoutingFactors(
     proofMetrics: ProofMetrics,
-    packingResult: PackingResult,
+    packingResult: PackingResult | QueryPlan,
     evidenceChunks: Chunk[]
   ): RoutingDecision['metadata']['routingFactors'] {
     // Handle edge case where evidence chunks might be empty
     let evidenceQuality = proofMetrics.metadata.evidenceQuality;
-    if (packingResult.selectedCandidates.length === 0) {
+    
+    // If we have a PackingResult, check selectedCandidates
+    if ('selectedCandidates' in packingResult && packingResult.selectedCandidates.length === 0) {
       evidenceQuality = 0;
     }
     
@@ -437,7 +440,59 @@ export class AnswerabilityProofRouter {
   }
 
   /**
-   * Get tier-specific configuration
+   * Compute proof metrics for packed evidence
+   * @param packed - Packing result with selected candidates
+   * @param query - Original query
+   * @returns Proof metrics
+   */
+  public async computeProof(packed: PackingResult, query: string): Promise<ProofMetrics> {
+    // Create a proof calculator instance
+    const proofCalculator = new ProofCalculator();
+    
+    // For now, create empty arrays as placeholders
+    // In a real implementation, we would extract atoms from the query
+    const queryAtoms: Atom[] = [];
+    const evidenceChunks: Chunk[] = [];
+    
+    // Compute proof metrics
+    const metrics = proofCalculator.calculateProof(packed, queryAtoms, evidenceChunks);
+    
+    return metrics;
+  }
+
+  /**
+   * Decide which LLM tier to use based on proof metrics
+   * @param proof - Proof metrics
+   * @param plan - Query plan
+   * @param budget - Token budget
+   * @returns LLM tier decision
+   */
+  public decideTier(proof: ProofMetrics, plan: QueryPlan, budget: number): LLMTier {
+    // Use the existing routing logic
+    const routingFactors = this.analyzeRoutingFactors(proof, plan, []);
+    
+    // Create a mock PackingResult for the routeQuery call
+    const mockPackingResult: PackingResult = {
+      selectedCandidates: [],
+      totalTokens: 0,
+      totalCoverage: 0,
+      coveragePercentage: 0,
+      budgetUtilization: 0,
+      metadata: {
+        algorithm: 'greedy',
+        iterations: 0,
+        processingTime: 0,
+        coverageMatrixId: 'mock'
+      }
+    };
+    
+    const decision = this.routeQuery(proof, mockPackingResult, [], []);
+    
+    return decision.tier;
+  }
+
+  /**
+   * Get tier configuration
    */
   public getTierConfig(tier: LLMTier): TierConfiguration[LLMTier] {
     return this.config[tier];

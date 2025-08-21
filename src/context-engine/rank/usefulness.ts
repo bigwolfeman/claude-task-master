@@ -678,4 +678,28 @@ export class UsefulnessRanker {
     this.weights = { ...this.defaultWeights };
     this.normalizeWeights();
   }
+
+  /**
+   * Bubble stabilize ranking results
+   * @param candidates - Ranked candidates to stabilize
+   * @returns Stabilized ranking candidates
+   */
+  public async bubbleStabilize(candidates: RankingCandidate[]): Promise<RankingCandidate[]> {
+    // Simple bubble sort stabilization - can be enhanced with more sophisticated algorithms
+    const stabilized = [...candidates];
+    let swapped = true;
+    
+    while (swapped) {
+      swapped = false;
+      for (let i = 0; i < stabilized.length - 1; i++) {
+        if (stabilized[i].utilityScore < stabilized[i + 1].utilityScore) {
+          // Swap candidates
+          [stabilized[i], stabilized[i + 1]] = [stabilized[i + 1], stabilized[i]];
+          swapped = true;
+        }
+      }
+    }
+    
+    return stabilized;
+  }
 }
