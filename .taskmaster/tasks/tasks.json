@@ -530,7 +530,7 @@
         "dependencies": [
           29
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -538,7 +538,7 @@
             "description": "Create the core utility function with 6 factors: relevance, information gain, trust, reusability, token cost, and conflict risk",
             "dependencies": [],
             "details": "Implement src/context-engine/rank/usefulness.ts with pointwise utility calculation: U = α·Rel + β·InfoGain + γ·Trust + δ·Reusability − η·TokenCost − ζ·ConflictRisk. Include individual factor calculation methods and weight application logic.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": ""
           },
           {
@@ -605,14 +605,14 @@
       {
         "id": 29,
         "title": "Build Cross-Encoder Reranking",
-        "description": "Implement cross-encoder reranking for improved retrieval precision",
-        "details": "Create src/context-engine/retrieve/rerank_ce.ts with local cross-encoder models and API fallback. Implement efficient batch reranking with proper timeout handling. Support configurable model selection and fallback chains. Include caching for repeated query-document pairs. Add health checks for external reranking services.",
-        "testStrategy": "Test reranking accuracy improvements over base retrieval. Verify timeout handling and fallback mechanisms. Performance tests for batch processing efficiency.",
-        "priority": "medium",
+        "description": "Cross-encoder reranking system implementation completed with comprehensive features",
+        "status": "done",
         "dependencies": [
           6
         ],
-        "status": "pending",
+        "priority": "medium",
+        "details": "Successfully implemented a complete cross-encoder reranking system in src/context-engine/retrieve/rerank_ce.ts with local cross-encoder models and API fallback. Features include efficient batch reranking with proper timeout handling, configurable model selection and fallback chains, caching for repeated query-document pairs, and health checks for external reranking services. The system is fully integrated with the Context Engine and includes comprehensive test coverage.",
+        "testStrategy": "All core tests implemented and passing: reranking accuracy improvements over base retrieval, timeout handling and fallback mechanisms verification, performance tests for batch processing efficiency, caching functionality, health monitoring, and error handling scenarios.",
         "subtasks": []
       },
       {
@@ -725,7 +725,7 @@
     ],
     "metadata": {
       "created": "2025-08-20T05:21:47.121Z",
-      "updated": "2025-08-21T00:02:57.820Z",
+      "updated": "2025-08-21T00:17:28.434Z",
       "description": "Tasks for master context"
     }
   }

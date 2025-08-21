@@ -4,3 +4,4 @@
  */
 
 export * from './hybrid.js';
+export * from './rerank_ce.js';

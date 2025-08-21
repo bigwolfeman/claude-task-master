@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { SQLiteStorageBackend } from '../../src/context-engine/ingest/store.js';
-import type { Document, Chunk, Atom, GraphNode, GraphEdge, Summary } from '../../src/context-engine/types.js';
+import { Document, Chunk, Atom, GraphNode, GraphEdge, Summary } from '../../src/context-engine/types.js';
 
 describe('SQLiteStorageBackend', () => {
 	let storage: SQLiteStorageBackend;

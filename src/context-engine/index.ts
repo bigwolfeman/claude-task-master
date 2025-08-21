@@ -3,7 +3,7 @@
  * Provides access to all public APIs and types
  */
 
-// Core types
+// Core types and interfaces
 export * from './types.js';
 
 // Main orchestrator
@@ -15,23 +15,23 @@ export * from './ingest/index.js';
 // Retrieval components
 export * from './retrieve/index.js';
 
-// Ranking components (to be implemented)
-// export * from './rank/index.js';
+// Ranking components
+export * from './rank/index.js';
 
-// Packing components (to be implemented)
-// export * from './pack/index.js';
+// Packing components
+export * from './pack/index.js';
 
-// Routing components (to be implemented)
-// export * from './router/index.js';
+// Router components
+export * from './router/index.js';
 
-// Compression components (to be implemented)
-// export * from './compress/index.js';
+// Compression components
+export * from './compress/index.js';
 
-// Caching components (to be implemented)
-// export * from './cache/index.js';
+// Caching components
+export * from './cache/index.js';
 
-// Metrics components (to be implemented)
-// export * from './metrics/index.js';
+// Metrics components
+export * from './metrics/index.js';
 
 // Graph-specific modules (Task 5)
 export * from './ingest/graph.js';

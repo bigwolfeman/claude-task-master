@@ -35,3 +35,9 @@ export * from './hybrid.test.js';
 
 // Orchestrator tests
 export * from './orchestrator.test.js';
+
+// Cross-encoder reranking tests
+export * from './rerank_ce.test.js';
+
+// Usefulness ranking tests
+export * from './usefulness.test.js';
