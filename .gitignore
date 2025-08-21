@@ -100,3 +100,15 @@ apps/extension/vsix-build/
 # Task files
 # tasks.json
 # tasks/ 
+scripts/dev-docker.bat
+.gitignore
+.gitignore
+.gitignore
+.gitignore
+.env.backup
+docker-compose.dev.yml
+.gitignore
+Dockerfile.dev
+DOCKER-DEV.md
+.dockerignore
+scripts/dev-docker.sh

@@ -5214,6 +5214,131 @@ Examples:
 			process.exit(1);
 		});
 
+	// Context Engine Commands
+	programInstance
+		.command('ingest')
+		.description('Ingest documents into the context engine')
+		.argument('<path>', 'Path to document or directory to ingest')
+		.option(
+			'-f, --file <file>',
+			'Path to the context engine configuration file',
+			'.taskmaster/context-engine/config.json'
+		)
+		.option(
+			'--chunk-size <size>',
+			'Size of text chunks to create (default: 1000)',
+			'1000'
+		)
+		.option(
+			'--chunk-overlap <overlap>',
+			'Overlap between chunks (default: 200)',
+			'200'
+		)
+		.action(async (path, options) => {
+			try {
+				const { runIngestCLI } = await import('./context-engine-cli.js');
+				await runIngestCLI(path, {
+					file: options.file,
+					chunkSize: options.chunkSize,
+					chunkOverlap: options.chunkOverlap
+				});
+			} catch (error) {
+				console.error(chalk.red(`Error ingesting documents: ${error.message}`));
+				process.exit(1);
+			}
+		});
+
+	programInstance
+		.command('build-graph')
+		.description('Build the knowledge graph from ingested documents')
+		.option(
+			'-f, --file <file>',
+			'Path to the context engine configuration file',
+			'.taskmaster/context-engine/config.json'
+		)
+		.option(
+			'--force',
+			'Force rebuild of the entire graph'
+		)
+		.action(async (options) => {
+			try {
+				const { runBuildGraphCLI } = await import('./context-engine-cli.js');
+				await runBuildGraphCLI({
+					file: options.file,
+					force: options.force
+				});
+			} catch (error) {
+				console.error(chalk.red(`Error building graph: ${error.message}`));
+				process.exit(1);
+			}
+		});
+
+	programInstance
+		.command('query')
+		.description('Query the context engine for relevant information')
+		.argument('<query>', 'The query to search for')
+		.option(
+			'-f, --file <file>',
+			'Path to the context engine configuration file',
+			'.taskmaster/context-engine/config.json'
+		)
+		.option(
+			'--limit <number>',
+			'Maximum number of results to return (default: 10)',
+			'10'
+		)
+		.option(
+			'--threshold <score>',
+			'Minimum relevance score (0.0-1.0, default: 0.0)',
+			'0.7'
+		)
+		.action(async (query, options) => {
+			try {
+				const { runQueryCLI } = await import('./context-engine-cli.js');
+				await runQueryCLI(query, {
+					file: options.file,
+					limit: options.limit,
+					threshold: options.threshold
+				});
+			} catch (error) {
+				console.error(chalk.red(`Error querying context engine: ${error.message}`));
+				process.exit(1);
+			}
+		});
+
+	programInstance
+		.command('proof')
+		.description('Generate proof of evidence for a query')
+		.argument('<query>', 'The query to generate proof for')
+		.option(
+			'-f, --file <file>',
+			'Path to the context engine configuration file',
+			'.taskmaster/context-engine/config.json'
+		)
+		.option(
+			'--max-evidence <number>',
+			'Maximum number of evidence pieces to include (default: 5)',
+			'5'
+		)
+		.option(
+			'--min-confidence <score>',
+			'Minimum confidence score (0.0-1.0, default: 0.8)',
+			'0.8'
+		)
+		.action(async (query, options) => {
+			try {
+				const { runProofCLI } = await import('./context-engine-cli.js');
+				await runProofCLI(query, {
+					file: options.file,
+					maxEvidence: options.maxEvidence,
+					minConfidence: options.minConfidence
+				});
+			} catch (error) {
+				console.error(chalk.red(`Error generating proof: ${error.message}`));
+				process.exit(1);
+			}
+		});
+
 	return programInstance;
 }
 

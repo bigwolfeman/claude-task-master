@@ -41,6 +41,9 @@ import { renameTagDirect } from './direct-functions/rename-tag.js';
 import { copyTagDirect } from './direct-functions/copy-tag.js';
 import { scopeUpDirect } from './direct-functions/scope-up.js';
 import { scopeDownDirect } from './direct-functions/scope-down.js';
+import { contextEngineDirect } from './direct-functions/context-engine.js';
+import { ingestDocumentDirect } from './direct-functions/ingest-document.js';
+import { contextStorageDirect } from './direct-functions/context-storage.js';
 
 // Re-export utility functions
 export { findTasksPath } from './utils/path-utils.js';
@@ -82,7 +85,10 @@ export const directFunctions = new Map([
 	['renameTagDirect', renameTagDirect],
 	['copyTagDirect', copyTagDirect],
 	['scopeUpDirect', scopeUpDirect],
-	['scopeDownDirect', scopeDownDirect]
+	['scopeDownDirect', scopeDownDirect],
+	['contextEngineDirect', contextEngineDirect],
+	['ingestDocumentDirect', ingestDocumentDirect],
+	['contextStorageDirect', contextStorageDirect]
 ]);
 
 // Re-export all direct function implementations
@@ -122,5 +128,8 @@ export {
 	renameTagDirect,
 	copyTagDirect,
 	scopeUpDirect,
-	scopeDownDirect
+	scopeDownDirect,
+	contextEngineDirect,
+	ingestDocumentDirect,
+	contextStorageDirect
 };

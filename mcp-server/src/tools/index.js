@@ -40,6 +40,9 @@ import { registerResearchTool } from './research.js';
 import { registerRulesTool } from './rules.js';
 import { registerScopeUpTool } from './scope-up.js';
 import { registerScopeDownTool } from './scope-down.js';
+import { registerContextEngineTool } from './context-engine.js';
+import { registerIngestDocumentTool } from './ingest-document.js';
+import { registerContextStorageTool } from './context-storage.js';
 
 /**
  * Register all Task Master tools with the MCP server
@@ -100,6 +103,11 @@ export function registerTaskMasterTools(server) {
 
 		// Group 8: Research Features
 		registerResearchTool(server);
+		
+		// Group 9: Context Engine Operations
+		registerContextEngineTool(server);
+		registerIngestDocumentTool(server);
+		registerContextStorageTool(server);
 	} catch (error) {
 		logger.error(`Error registering Task Master tools: ${error.message}`);
 		throw error;

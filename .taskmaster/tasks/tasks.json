@@ -319,8 +319,45 @@
         "dependencies": [
           23
         ],
-        "status": "in-progress",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create MCP tool definitions for context engine operations",
+            "description": "Define MCP tools for query, retrieve, rank, pack, and generate MSE operations",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 21
+          },
+          {
+            "id": 2,
+            "title": "Implement MCP server integration with context engine",
+            "description": "Integrate the context engine orchestrator with the MCP server for handling tool calls",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 21
+          },
+          {
+            "id": 3,
+            "title": "Add context engine configuration and initialization",
+            "description": "Implement configuration management and initialization for the context engine in MCP context",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 21
+          },
+          {
+            "id": 4,
+            "title": "Create comprehensive tests for MCP integration",
+            "description": "Write tests to verify MCP tools work correctly with the context engine",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 21
+          }
+        ]
       },
       {
         "id": 22,
@@ -332,8 +369,54 @@
         "dependencies": [
           23
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create CLI command structure and argument parsing",
+            "description": "Set up the basic CLI command structure for context engine operations with proper argument parsing and validation",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 22
+          },
+          {
+            "id": 2,
+            "title": "Implement ingest CLI command",
+            "description": "Create the ingest command for adding documents to the context engine with progress UI and incremental updates",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 22
+          },
+          {
+            "id": 3,
+            "title": "Implement build-graph CLI command",
+            "description": "Create the build-graph command for constructing knowledge graphs from ingested documents with progress UI",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 22
+          },
+          {
+            "id": 4,
+            "title": "Implement query CLI command",
+            "description": "Create the query command for searching and retrieving information from the context engine with various output formats",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 22
+          },
+          {
+            "id": 5,
+            "title": "Implement proof CLI command",
+            "description": "Create the proof command for generating answerability proofs and explanations with proper error handling",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 22
+          }
+        ]
       },
       {
         "id": 23,
@@ -725,7 +808,7 @@
     ],
     "metadata": {
       "created": "2025-08-20T05:21:47.121Z",
-      "updated": "2025-08-21T04:22:21.719Z",
+      "updated": "2025-08-21T05:22:22.512Z",
       "description": "Tasks for master context"
     }
   }
